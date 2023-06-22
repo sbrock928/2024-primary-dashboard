@@ -46,6 +46,7 @@ def national_average_trend(df):
         color="candidate",
         trendline="rolling",
         trendline_options=dict(window=5),
+        title='Standing',
     )
 
     return fig
@@ -55,7 +56,7 @@ def national_favorability_trend(df):
     df["start_date"] = pd.to_datetime(df["start_date"])
 
     fig = px.line(
-        df, x="start_date", y="favorable", color="politician", title="Historical"
+        df, x="start_date", y="favorable", color="politician", title="Favorability"
     )
 
     return fig
@@ -63,6 +64,7 @@ def national_favorability_trend(df):
 
 def national_favorability_stacked_bar(df):
     df["start_date"] = pd.to_datetime(df["start_date"])
+
     df = df.loc[df.groupby(["politician"]).start_date.idxmax()]
 
     fig = px.bar(
@@ -74,13 +76,23 @@ def national_favorability_stacked_bar(df):
             "somewhat_unfavorable",
             "very_unfavorable",
         ],
-        title="Current",
+        title="Favorability",
         orientation="h",
         text_auto=True,
+
+
     )
 
     return fig
 
+def national_standing_pie(df):
+    df["date"] = pd.to_datetime(df["date"])
+    df = df.loc[df.groupby(["candidate"]).date.idxmax()]
+
+    fig = px.pie(df, values='pct_estimate', names='candidate', title='Standing')
+
+
+    return fig
 
 def power_bar(df):
     fig = px.bar(

@@ -65,6 +65,7 @@ candidate_names = {
     "Trump": "Donald Trump",
     "Hutchinson": "Asa Hutchinson",
     "Ramaswamy": "Vivek G. Ramaswamy",
+    "Burgum": "Doug Burgum"
 }
 import_columns = [
     "candidate",
@@ -111,6 +112,7 @@ def queryData():
                 "Donald Trump",
                 "Asa Hutchinson",
                 "Vivek G. Ramaswamy",
+                "Doug Burgum"
             ]
         )
     ]

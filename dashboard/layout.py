@@ -108,7 +108,51 @@ summary = html.Div(
                                     [
                                         dbc.Card(
                                             [
-                                                dbc.CardHeader("Current Standings"),
+                                                dbc.CardHeader("Current Polls"),
+                                                dbc.CardBody(
+                                                    [
+                                                        dbc.Row(
+                                                            [
+                                                                dbc.Col(
+                                                                    dbc.Card(
+                                                                        dcc.Graph(
+                                                                            id="current-standing-pie",
+                                                                            config={
+                                                                                "displayModeBar": False
+                                                                            },
+                                                                        ),className="w-100 mb-3"
+                                                                    ),
+                                                                ),
+                                                                dbc.Col(
+                                                                    dbc.Card(
+                                                                        dcc.Graph(
+                                                                            id="favorability-stacked-bar",
+                                                                            config={
+                                                                                "displayModeBar": False
+                                                                            },
+                                                                        ), className="w-100 mb-3"
+                                                                    ),
+                                                                )
+                                                            ]
+                                                        )
+                                                    ]
+                                                ),
+                                            ]
+                                        )
+                                    ],
+                                    width=12,
+                                )
+                            ],
+                            style={"padding-top": "10px", "padding-bottom": "10px"},
+                        ),
+
+                        dbc.Row(
+                            [
+                                dbc.Col(
+                                    [
+                                        dbc.Card(
+                                            [
+                                                dbc.CardHeader("Historical Polls"),
                                                 dbc.CardBody(
                                                     [
                                                         dbc.Card(
@@ -120,50 +164,6 @@ summary = html.Div(
                                                             ),
                                                             style={
                                                                 "display": "inline-block",
-                                                                "width": "48%",
-                                                            },
-                                                        ),
-                                                        dbc.Card(
-                                                            dcc.Graph(
-                                                                id="state-choropleth",
-                                                                config={
-                                                                    "displayModeBar": False
-                                                                },
-                                                            ),
-                                                            style={
-                                                                "display": "inline-block",
-                                                                "width": "48%",
-                                                            },
-                                                        ),
-                                                    ]
-                                                ),
-                                            ]
-                                        )
-                                    ],
-                                    width=12,
-                                )
-                            ],
-                            style={"padding-top": "10px", "padding-bottom": "10px"},
-                        ),
-                        dbc.Row(
-                            [
-                                dbc.Col(
-                                    [
-                                        dbc.Card(
-                                            [
-                                                dbc.CardHeader("Favorability"),
-                                                dbc.CardBody(
-                                                    [
-                                                        dbc.Card(
-                                                            dcc.Graph(
-                                                                id="favorability-stacked-bar",
-                                                                config={
-                                                                    "displayModeBar": False
-                                                                },
-                                                            ),
-                                                            style={
-                                                                "display": "inline-block",
-                                                                "width": "48%",
                                                             },
                                                         ),
                                                         dbc.Card(
@@ -172,10 +172,10 @@ summary = html.Div(
                                                                 config={
                                                                     "displayModeBar": False
                                                                 },
+                                                                style = {"width": "100%"}
                                                             ),
                                                             style={
                                                                 "display": "inline-block",
-                                                                "width": "48%",
                                                             },
                                                         ),
                                                     ]
@@ -184,7 +184,34 @@ summary = html.Div(
                                         )
                                     ],
                                     width=12,
-                                )
+                                ),
+                                dbc.Row(
+                                    [
+                                        dbc.Col(
+                                            [
+                                                dbc.Card(
+                                                    [
+                                                        dbc.CardHeader("Current Standings"),
+                                                        dbc.CardBody(
+                                                            [
+                                                                dbc.Card(
+                                                                    dcc.Graph(
+                                                                        id="state-choropleth",
+                                                                        config={
+                                                                            "displayModeBar": False
+                                                                        },
+                                                                    ),
+                                                                ),
+                                                            ]
+                                                        ),
+                                                    ]
+                                                )
+                                            ],
+                                            width=12,
+                                        )
+                                    ],
+                                    style={"padding-top": "10px", "padding-bottom": "10px"},
+                                ),
                             ],
                             style={"padding-top": "10px", "padding-bottom": "10px"},
                         ),
@@ -281,11 +308,11 @@ def update(n):
 
 
 @callback(
-    [
+    [   Output("current-standing-pie", "figure"),
         Output("historical-line", "figure"),
-        Output("state-choropleth", "figure"),
         Output("favorability-trend", "figure"),
         Output("favorability-stacked-bar", "figure"),
+        Output("state-choropleth", "figure"),
     ],
     [
         Input("national-average-store", "data"),
@@ -302,6 +329,7 @@ def update_current_standing_figures(
 
     state_standing_map = func.state_standing_map(state_poll_df)
     historical_line = func.national_average_trend(national_avg_poll_df)
+    current_standing_pie = func.national_standing_pie(national_avg_poll_df)
 
     favorability_trend_graph = func.national_favorability_trend(
         national_favorability_df
@@ -311,10 +339,11 @@ def update_current_standing_figures(
     )
 
     return (
+        current_standing_pie,
         historical_line,
-        state_standing_map,
         favorability_trend_graph,
         favorability_trend_bar,
+        state_standing_map,
     )
 
 
