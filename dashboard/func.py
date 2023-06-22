@@ -2,21 +2,64 @@ import plotly.express as px
 from collections import OrderedDict
 from random import randint
 import pandas as pd
+import plotly.graph_objects as go
+import datetime
+
+def state_standing_map(df):
 
 
-def avg_pie(df):
-    # df = df.groupby(['politician'])['favorable'].mean().round(2).reset_index().sort_values(['favorable'], ascending = False)
-    #
-    #
-    # fig = px.pie(df, values='favorable', names='politician', title='Avg Polling Pct')
-    df["end_date"] = pd.to_datetime(df["end_date"])
-    # fig = px.line(df, x="date", y="pct_estimate", color= 'candidate', title='Life expectancy in Canada', markers = True)
-    fig = px.line(df, x="end_date", y="favorable", color="politician")
+    df["start_date"] = pd.to_datetime(df["start_date"])
+    # df = df.loc[df.groupby('Code')['candidate_name'].start_date.idxmax()]
+    df = df.loc[df.groupby(['Code','candidate_name']).start_date.idxmax()].sort_values(
+        ["pct"], ascending=True)
+    df['max'] = df.groupby('Code')['pct'].transform('max')
+    # df_new = df.loc[df.groupby(['Code','candidate_name'])
+
+    print(df[df['Code']=='TX'].to_string())
+
+
+
+    # df.groupby(['Sex', 'Age_Group'])[metric].count().reset_index()
+
+    # df = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/2011_us_ag_exports.csv')
+
+    for col in df.columns:
+        df[col] = df[col].astype(str)
+
+
+
+
+    # fig = go.Figure(data=go.Choropleth(
+    #     locations=df['Code'],
+    #     z=df['pct'].astype(float),
+    #     locationmode='USA-states',
+    #     colorscale='Reds',
+    #     autocolorscale=False,
+    #     text=df['candidate_name'],
+    #     marker_line_color='white',  # line markers between states
+    #     colorbar_title="State Polls"
+    # ))
+    # fig.update_layout(
+    #     title_text='2011 US Agriculture Exports by State<br>(Hover for breakdown)',
+    #     geo=dict(
+    #         scope='usa',
+    #         projection=go.layout.geo.Projection(type='albers usa'),
+    #         showlakes=True,  # lakes
+    #         lakecolor='rgb(255, 255, 255)'),
+    # )
+
+    fig = px.choropleth(df,
+                        locationmode='USA-states',
+                        locations='Code',
+                        color="candidate_name",
+                        hover_data=['pct'],
+                        )
+    fig.update_geos(fitbounds="locations")
 
     return fig
 
 
-def historical(df):
+def national_average_trend(df):
     df["date"] = pd.to_datetime(df["date"])
     # fig = px.line(df, x="date", y="pct_estimate", color= 'candidate', title='Life expectancy in Canada', markers = True)
     fig = px.scatter(
@@ -30,8 +73,36 @@ def historical(df):
 
     return fig
 
+def national_favorability_trend(df):
+    df["start_date"] = pd.to_datetime(df["start_date"])
+    # fig = px.line(df, x="date", y="pct_estimate", color= 'candidate', title='Life expectancy in Canada', markers = True)
+    fig = px.line(
+        df,
+        x="start_date",
+        y="favorable",
+        color="politician",
+        title='Historical'
+    )
 
+    return fig
+def national_favorability_stacked_bar(df):
+    df["start_date"] = pd.to_datetime(df["start_date"])
+    df = df.loc[df.groupby(['politician']).start_date.idxmax()]
+
+    print(df.to_string())
+
+    fig = px.bar(df,
+                 y="politician",
+                 x=["very_favorable", "somewhat_favorable", "somewhat_unfavorable", "very_unfavorable"],
+                 # x="politician",
+                 # y=["very_favorable", "somewhat_favorable", "somewhat_unfavorable", "very_unfavorable"],
+                 title='Current',
+                 orientation='h'
+                 )
+
+    return fig
 def power_bar(df):
+
     fig = px.bar(
         df,
         y="Winning Coalition Count",

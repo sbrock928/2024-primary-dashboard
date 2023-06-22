@@ -80,16 +80,16 @@ def queryData():
     PATH = pathlib.Path(__file__).parent
     DATA_PATH = PATH.joinpath("../datasets").resolve()
 
-    average_polls_df = pd.read_csv(
+    national_avg_poll_df = pd.read_csv(
         DATA_PATH.joinpath("presidential_primary_averages.csv"), engine="python"
     )
-    average_polls_df = average_polls_df[average_polls_df["cycle"] == 2024]
-    average_polls_df = average_polls_df[import_columns]
-    average_polls_df["candidate"] = average_polls_df["candidate"].replace(
+    national_avg_poll_df = national_avg_poll_df[national_avg_poll_df["cycle"] == 2024]
+    national_avg_poll_df = national_avg_poll_df[import_columns]
+    national_avg_poll_df["candidate"] = national_avg_poll_df["candidate"].replace(
         candidate_names
     )
 
-    favorability_polls_df = pd.read_csv(
+    national_favorability_df = pd.read_csv(
         DATA_PATH.joinpath("favorability_polls.csv"), engine="python"
     )
 
@@ -98,5 +98,7 @@ def queryData():
     )
     state_polls_df["Code"] = state_polls_df["state"].map(code)
     state_polls_df["state"] = state_polls_df["state"].map(code)
+    state_polls_df = state_polls_df[~state_polls_df.Code.isnull()]
+    state_polls_df = state_polls_df[state_polls_df['candidate_name'].isin(["Mike Pence","Nikki Haley","Ron DeSantis","Tim Scott","Donald Trump","Asa Hutchinson","Vivek G. Ramaswamy"])]
 
-    return average_polls_df, favorability_polls_df, state_polls_df
+    return national_avg_poll_df, national_favorability_df, state_polls_df

@@ -20,32 +20,6 @@ from dashboard import query, func
 
 
 data_df = queryData()
-detail_table = dash_table.DataTable(
-    id="detail_table",
-    page_size=10,
-    style_as_list_view=True,
-    sort_action="native",
-    style_table={"overflowX": "auto", "border": "3px solid black"},
-    style_header={
-        "padding-left": "0px",
-        "margin-left": "0px",
-        "textAlign": "left",
-        "fontWeight": "bold",
-        "backgroundColor": "#3B3331",
-        "color": "white",
-    },
-    style_cell={
-        "padding-left": "0px",
-        "textAlign": "left",
-        "overflow": "hidden",
-        "textOverflow": "ellipsis",
-        "color": "black",
-        "minWidth": "10px",
-        "width": "10px",
-        "maxWidth": "250px",
-    },
-    css=[{"selector": ".column-header-name", "rule": "margin-left:unset;"}],
-)
 
 sim_table = dash_table.DataTable(
     id="sim-table",
@@ -107,13 +81,13 @@ state_table = dash_table.DataTable(
     css=[{"selector": ".column-header-name", "rule": "margin-left:unset;"}],
 )
 
-candidate_dropdown = dcc.Dropdown(id="candidate-select", multi=True)
+
 
 
 summary = html.Div(
     [
-        dcc.Store(id="average-polls-store"),
-        dcc.Store(id="favorability-polls-store"),
+        dcc.Store(id="national-average-store"),
+        dcc.Store(id="national-favorability-store"),
         dcc.Store(id="state-polls-store"),
         html.H2(
             "Republican Primary Dataset",
@@ -134,12 +108,38 @@ summary = html.Div(
                             [
                                 dbc.Col(
                                     [
-                                        candidate_dropdown,
+                                        dbc.Card(
+                                            [
+                                                dbc.CardHeader("Current Standings"),
+                                                dbc.CardBody(
+                                                    [
+                                                        dbc.Card(
+                                                            dcc.Graph(
+                                                                id="historical-line",
+                                                                config={
+                                                                    "displayModeBar": False
+                                                                },
+                                                            ), style={'display': 'inline-block', 'width': '48%'}
+
+                                                        ),
+                                                        dbc.Card(
+                                                            dcc.Graph(
+                                                                id="state-choropleth",
+                                                                config={
+                                                                    "displayModeBar": False
+                                                                },
+                                                            ), style={'display': 'inline-block', 'width': '48%'}
+                                                        )
+
+                                                    ]
+                                                ),
+                                            ]
+                                        )
                                     ],
-                                    width=3,
-                                ),
+                                    width=12,
+                                )
                             ],
-                            style={"padding-top": "10px"},
+                            style={"padding-top": "10px", "padding-bottom": "10px"},
                         ),
                         dbc.Row(
                             [
@@ -147,46 +147,38 @@ summary = html.Div(
                                     [
                                         dbc.Card(
                                             [
-                                                dbc.CardHeader("Gender Breakout"),
+                                                dbc.CardHeader("Favorability"),
                                                 dbc.CardBody(
                                                     [
-                                                        dcc.Graph(
-                                                            id="average-pie",
-                                                            config={
-                                                                "displayModeBar": False
-                                                            },
-                                                        )
+                                                        dbc.Card(
+                                                            dcc.Graph(
+                                                                id="favorability-stacked-bar",
+                                                                config={
+                                                                    "displayModeBar": False
+                                                                },
+                                                            ), style={'display': 'inline-block', 'width': '48%'}
+                                                        ),
+                                                        dbc.Card(
+                                                            dcc.Graph(
+                                                                id="favorability-trend",
+                                                                config={
+                                                                    "displayModeBar": False
+                                                                },
+                                                            ), style={'display': 'inline-block', 'width': '48%'}
+
+                                                        ),
+
+
                                                     ]
                                                 ),
                                             ]
                                         )
                                     ],
-                                    width=6,
-                                ),
-                                dbc.Col(
-                                    [
-                                        dbc.Card(
-                                            [
-                                                dbc.CardHeader("Gender Breakout"),
-                                                dbc.CardBody(
-                                                    [
-                                                        dcc.Graph(
-                                                            id="historical-line",
-                                                            config={
-                                                                "displayModeBar": False
-                                                            },
-                                                        )
-                                                    ]
-                                                ),
-                                            ]
-                                        )
-                                    ],
-                                    width=6,
-                                ),
+                                    width=12,
+                                )
                             ],
                             style={"padding-top": "10px", "padding-bottom": "10px"},
                         ),
-                        dbc.Row(detail_table),
                     ],
                     label="National Polls",
                 ),
@@ -249,32 +241,6 @@ summary = html.Div(
                     ],
                     label="State Political Power",
                 ),
-                dbc.Tab(
-                    [
-                        dbc.Row(
-                            [
-                                dbc.Col(
-                                    dcc.Dropdown(
-                                        id="state-select", value="IA", clearable=False
-                                    )
-                                )
-                            ]
-                        ),
-                        dbc.Row(
-                            [
-                                dbc.Col(
-                                    [
-                                        dcc.Loading(
-                                            children=[html.Div(state_table)],
-                                            type="circle",
-                                        ),
-                                    ]
-                                )
-                            ]
-                        ),
-                    ],
-                    label="State Polling",
-                ),
             ]
         ),
     ]
@@ -283,64 +249,54 @@ summary = html.Div(
 
 @callback(
     [
-        Output("average-polls-store", "data"),
-        Output("favorability-polls-store", "data"),
+        Output("national-average-store", "data"),
+        Output("national-favorability-store", "data"),
         Output("state-polls-store", "data"),
-        Output("candidate-select", "options"),
-        Output("state-select", "options"),
     ],
     Input("interval-component", "n_intervals"),
 )
 def update(n):
-    average_polls_df, favorability_polls_df, state_polls_df = query.queryData()
+    national_avg_poll_df, national_favorability_df, state_polls_df = query.queryData()
 
-    candidate_options = [
-        {"label": i, "value": i} for i in average_polls_df["candidate"].unique()
+
+    national_favorability_df = national_favorability_df.loc[
+        national_favorability_df["politician"].isin(national_avg_poll_df["candidate"].unique())
     ]
-    favorability_polls_df = favorability_polls_df.loc[
-        favorability_polls_df["politician"].isin(average_polls_df["candidate"].unique())
-    ]
-    state_list = state_polls_df["state"].dropna().sort_values(ascending=True).unique()
+
 
     return (
-        average_polls_df.to_dict("records"),
-        favorability_polls_df.to_dict("records"),
+        national_avg_poll_df.to_dict("records"),
+        national_favorability_df.to_dict("records"),
         state_polls_df.to_dict("records"),
-        candidate_options,
-        state_list,
     )
 
 
 @callback(
     [
-        Output("detail_table", "data"),
-        Output("detail_table", "page_current"),
-        Output("average-pie", "figure"),
         Output("historical-line", "figure"),
+        Output("state-choropleth", "figure"),
+        Output("favorability-trend", "figure"),
+        Output("favorability-stacked-bar", "figure"),
     ],
     [
-        Input("candidate-select", "value"),
-        Input("average-polls-store", "data"),
-        Input("favorability-polls-store", "data"),
+        Input("national-average-store", "data"),
+        Input("national-favorability-store", "data"),
+        Input("state-polls-store", "data"),
     ],
 )
-def update_figures(candidate, average_polls, favorability_polls):
-    average_polls_df = pd.DataFrame(average_polls)
-    favorability_polls_df = pd.DataFrame(favorability_polls)
+def update_current_standing_figures(national_avg_data, national_favorability_data, state_poll_data):
+    national_avg_poll_df = pd.DataFrame(national_avg_data)
+    national_favorability_df = pd.DataFrame(national_favorability_data)
+    state_poll_df = pd.DataFrame(state_poll_data)
 
-    if candidate is not None and len(candidate) >= 1:
-        average_polls_df = average_polls_df.loc[
-            average_polls_df["candidate"].isin(candidate)
-        ]
-        favorability_polls_df = favorability_polls_df.loc[
-            favorability_polls_df["politician"].isin(candidate)
-        ]
 
-    average_pie = func.avg_pie(favorability_polls_df)
-    historical_line = func.historical(average_polls_df)
+    state_standing_map = func.state_standing_map(state_poll_df)
+    historical_line = func.national_average_trend(national_avg_poll_df)
 
-    return average_polls_df.to_dict("records"), 0, average_pie, historical_line
+    favorability_trend_graph = func.national_favorability_trend(national_favorability_df)
+    favorability_trend_bar = func.national_favorability_stacked_bar(national_favorability_df)
 
+    return historical_line, state_standing_map, favorability_trend_graph,favorability_trend_bar
 
 @callback(
     [
@@ -366,25 +322,3 @@ def update_sim(n_trials, run_sim):
     else:
         return no_update, no_update, no_update
 
-
-@callback(
-    [
-        Output("state-table", "data"),
-        Output("state-table", "page_current"),
-    ],
-    [Input("state-polls-store", "data")],
-)
-def update_states(state_polls):
-    state_polls_df = pd.DataFrame(state_polls)
-    state_polls_df = (
-        state_polls_df.groupby(["candidate_name"])["pct"]
-        .mean()
-        .round(2)
-        .reset_index()
-        .sort_values(["pct"], ascending=False)
-    )
-
-    # if candidate is not None and len(candidate) >= 1:
-    #     state_polls_df = state_polls_df.loc[state_polls_df['candidate_name'].isin(candidate)]
-
-    return state_polls_df.to_dict("records"), 0
