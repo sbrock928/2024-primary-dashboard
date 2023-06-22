@@ -77,7 +77,7 @@ def queryData():
     # database query step goes here, importing for CSV for demo purposes
 
     national_avg_poll_df = pd.read_csv(
-        "https://projects.fivethirtyeight.com/polls/data/presidential_primary_averages.csv"
+        "https://projects.fivethirtyeight.com/polls/data/presidential_primary_averages.csv", engine='python'
     )
 
     national_avg_poll_df = national_avg_poll_df[national_avg_poll_df["cycle"] == 2024]
@@ -87,11 +87,11 @@ def queryData():
     )
 
     national_favorability_df = pd.read_csv(
-        "https://projects.fivethirtyeight.com/polls-page/data/favorability_polls.csv"
+        "https://projects.fivethirtyeight.com/polls-page/data/favorability_polls.csv", engine='python'
     )
 
     state_polls_df = pd.read_csv(
-        "https://projects.fivethirtyeight.com/polls-page/data/president_primary_polls.csv"
+        "https://projects.fivethirtyeight.com/polls-page/data/president_primary_polls.csv", engine='python'
     )
 
     state_polls_df["Code"] = state_polls_df["state"].map(code)
