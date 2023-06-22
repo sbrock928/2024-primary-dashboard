@@ -1,4 +1,7 @@
 import pandas as pd
+import requests
+import io
+
 
 code = {
     "Alabama": "AL",
@@ -76,9 +79,11 @@ import_columns = [
 def queryData():
     # database query step goes here, importing for CSV for demo purposes
 
-    national_avg_poll_df = pd.read_csv(
-        "https://projects.fivethirtyeight.com/polls/data/presidential_primary_averages.csv", engine='python'
-    )
+    url = 'https://projects.fivethirtyeight.com/polls/data/presidential_primary_averages.csv'
+    s = requests.get(url).content.decode('utf8')
+    national_avg_poll_df = pd.read_csv(io.StringIO(s), engine='python')
+
+
 
     national_avg_poll_df = national_avg_poll_df[national_avg_poll_df["cycle"] == 2024]
     national_avg_poll_df = national_avg_poll_df[import_columns]
@@ -86,13 +91,16 @@ def queryData():
         candidate_names
     )
 
-    national_favorability_df = pd.read_csv(
-        "https://projects.fivethirtyeight.com/polls-page/data/favorability_polls.csv", engine='python'
-    )
+    url = "https://projects.fivethirtyeight.com/polls-page/data/favorability_polls.csv"
+    s = requests.get(url).content.decode('utf8')
+    national_favorability_df = pd.read_csv(io.StringIO(s), engine='python')
 
-    state_polls_df = pd.read_csv(
-        "https://projects.fivethirtyeight.com/polls-page/data/president_primary_polls.csv", engine='python'
-    )
+
+    url = "https://projects.fivethirtyeight.com/polls-page/data/president_primary_polls.csv"
+    s = requests.get(url).content.decode('utf8')
+    state_polls_df = pd.read_csv(io.StringIO(s), engine='python')
+
+
 
     state_polls_df["Code"] = state_polls_df["state"].map(code)
     state_polls_df["state"] = state_polls_df["state"].map(code)
