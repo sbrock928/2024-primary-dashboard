@@ -82,8 +82,6 @@ state_table = dash_table.DataTable(
 )
 
 
-
-
 summary = html.Div(
     [
         dcc.Store(id="national-average-store"),
@@ -119,8 +117,11 @@ summary = html.Div(
                                                                 config={
                                                                     "displayModeBar": False
                                                                 },
-                                                            ), style={'display': 'inline-block', 'width': '48%'}
-
+                                                            ),
+                                                            style={
+                                                                "display": "inline-block",
+                                                                "width": "48%",
+                                                            },
                                                         ),
                                                         dbc.Card(
                                                             dcc.Graph(
@@ -128,9 +129,12 @@ summary = html.Div(
                                                                 config={
                                                                     "displayModeBar": False
                                                                 },
-                                                            ), style={'display': 'inline-block', 'width': '48%'}
-                                                        )
-
+                                                            ),
+                                                            style={
+                                                                "display": "inline-block",
+                                                                "width": "48%",
+                                                            },
+                                                        ),
                                                     ]
                                                 ),
                                             ]
@@ -156,7 +160,11 @@ summary = html.Div(
                                                                 config={
                                                                     "displayModeBar": False
                                                                 },
-                                                            ), style={'display': 'inline-block', 'width': '48%'}
+                                                            ),
+                                                            style={
+                                                                "display": "inline-block",
+                                                                "width": "48%",
+                                                            },
                                                         ),
                                                         dbc.Card(
                                                             dcc.Graph(
@@ -164,11 +172,12 @@ summary = html.Div(
                                                                 config={
                                                                     "displayModeBar": False
                                                                 },
-                                                            ), style={'display': 'inline-block', 'width': '48%'}
-
+                                                            ),
+                                                            style={
+                                                                "display": "inline-block",
+                                                                "width": "48%",
+                                                            },
                                                         ),
-
-
                                                     ]
                                                 ),
                                             ]
@@ -258,11 +267,11 @@ summary = html.Div(
 def update(n):
     national_avg_poll_df, national_favorability_df, state_polls_df = query.queryData()
 
-
     national_favorability_df = national_favorability_df.loc[
-        national_favorability_df["politician"].isin(national_avg_poll_df["candidate"].unique())
+        national_favorability_df["politician"].isin(
+            national_avg_poll_df["candidate"].unique()
+        )
     ]
-
 
     return (
         national_avg_poll_df.to_dict("records"),
@@ -284,19 +293,30 @@ def update(n):
         Input("state-polls-store", "data"),
     ],
 )
-def update_current_standing_figures(national_avg_data, national_favorability_data, state_poll_data):
+def update_current_standing_figures(
+    national_avg_data, national_favorability_data, state_poll_data
+):
     national_avg_poll_df = pd.DataFrame(national_avg_data)
     national_favorability_df = pd.DataFrame(national_favorability_data)
     state_poll_df = pd.DataFrame(state_poll_data)
 
-
     state_standing_map = func.state_standing_map(state_poll_df)
     historical_line = func.national_average_trend(national_avg_poll_df)
 
-    favorability_trend_graph = func.national_favorability_trend(national_favorability_df)
-    favorability_trend_bar = func.national_favorability_stacked_bar(national_favorability_df)
+    favorability_trend_graph = func.national_favorability_trend(
+        national_favorability_df
+    )
+    favorability_trend_bar = func.national_favorability_stacked_bar(
+        national_favorability_df
+    )
 
-    return historical_line, state_standing_map, favorability_trend_graph,favorability_trend_bar
+    return (
+        historical_line,
+        state_standing_map,
+        favorability_trend_graph,
+        favorability_trend_bar,
+    )
+
 
 @callback(
     [
@@ -321,4 +341,3 @@ def update_sim(n_trials, run_sim):
         return df.to_dict("records"), 0, power_bar
     else:
         return no_update, no_update, no_update
-
