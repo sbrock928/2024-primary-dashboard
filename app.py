@@ -17,9 +17,11 @@ app.config.suppress_callback_exceptions = True
 
 app.layout = html.Div(
     [
-        dcc.Location(id="url"),
+        dcc.Location(id="url", refresh=False),
         dbc.Container([sidebar, html.Div(id="page-content")], fluid=True),
-        dcc.Interval(id="interval-component", interval=1, n_intervals=0, max_intervals=1),
+        dcc.Interval(
+            id="interval-component", interval=1, n_intervals=0, max_intervals=1
+        ),
     ]
 )
 

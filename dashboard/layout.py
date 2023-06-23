@@ -82,218 +82,242 @@ state_table = dash_table.DataTable(
 )
 
 
-rep_primary_layout = html.Div(
-    [
-        dcc.Store(id="national-average-store"),
-        dcc.Store(id="national-favorability-store"),
-        dcc.Store(id="state-polls-store"),
-        html.H2(
-            "Republican Primary Dataset",
-            style={
-                "padding-left": 25,
-                "padding-top": 10,
-                "padding-bottom": 5,
-                "background-color": "#FF0000",
-                "color": "white",
-                "border-bottom": "black",
-            },
-        ),
-        dbc.Tabs(
-            [
-                dbc.Tab(
-                    [
-                        dbc.Row(
-                            [
+rep_primary_layout = dcc.Loading(
+    html.Div(
+        [
+            dcc.Store(id="national-average-store"),
+            dcc.Store(id="national-favorability-store"),
+            dcc.Store(id="state-polls-store"),
+            html.H2(
+                "Republican Primary Dataset",
+                style={
+                    "padding-left": 25,
+                    "padding-top": 10,
+                    "padding-bottom": 5,
+                    "background-color": "#FF0000",
+                    "color": "white",
+                    "border-bottom": "black",
+                },
+            ),
+            dbc.Tabs(
+                [
+                    dbc.Tab(
+                        [
+                            dbc.Row(
+                                [
+                                    dbc.Col(
+                                        [
+                                            dbc.Card(
+                                                [
+                                                    dbc.CardHeader("Current Polls"),
+                                                    dbc.CardBody(
+                                                        [
+                                                            dbc.Row(
+                                                                [
+                                                                    dbc.Col(
+                                                                        dbc.Card(
+                                                                            dcc.Loading(
+                                                                                dcc.Graph(
+                                                                                    id="current-standing-pie",
+                                                                                    config={
+                                                                                        "displayModeBar": False
+                                                                                    },
+                                                                                )
+                                                                            ),
+                                                                        ),
+                                                                        sm=12,
+                                                                        xxl=4,
+                                                                    ),
+                                                                    dbc.Col(
+                                                                        dbc.Card(
+                                                                            dcc.Loading(
+                                                                                dcc.Graph(
+                                                                                    id="favorability-stacked-bar",
+                                                                                    config={
+                                                                                        "displayModeBar": False
+                                                                                    },
+                                                                                ),
+                                                                            )
+                                                                        ),
+                                                                        sm=12,
+                                                                        xxl=8,
+                                                                    ),
+                                                                ]
+                                                            )
+                                                        ]
+                                                    ),
+                                                ]
+                                            )
+                                        ],
+                                        width=12,
+                                    )
+                                ],
+                                style={"padding-top": "10px", "padding-bottom": "10px"},
+                            ),
+                            dbc.Row(
+                                [
+                                    dbc.Col(
+                                        [
+                                            dbc.Card(
+                                                [
+                                                    dbc.CardHeader("Historical Polls"),
+                                                    dbc.CardBody(
+                                                        [
+                                                            dbc.Row(
+                                                                [
+                                                                    dbc.Col(
+                                                                        dbc.Card(
+                                                                            dcc.Loading(
+                                                                                dcc.Graph(
+                                                                                    id="historical-line",
+                                                                                    config={
+                                                                                        "displayModeBar": False
+                                                                                    },
+                                                                                ),
+                                                                            )
+                                                                        ),
+                                                                        sm=12,
+                                                                        xl=6,
+                                                                    ),
+                                                                    dbc.Col(
+                                                                        dbc.Card(
+                                                                            dcc.Loading(
+                                                                                dcc.Graph(
+                                                                                    id="favorability-trend",
+                                                                                    config={
+                                                                                        "displayModeBar": False
+                                                                                    },
+                                                                                ),
+                                                                            )
+                                                                        ),
+                                                                        sm=12,
+                                                                        xl=6,
+                                                                    ),
+                                                                ]
+                                                            )
+                                                        ]
+                                                    ),
+                                                ]
+                                            )
+                                        ],
+                                        width=12,
+                                    ),
+                                    dbc.Row(
+                                        [
+                                            dbc.Col(
+                                                [
+                                                    dbc.Card(
+                                                        [
+                                                            dbc.CardHeader(
+                                                                "Current Standings"
+                                                            ),
+                                                            dbc.CardBody(
+                                                                [
+                                                                    dbc.Card(
+                                                                        dcc.Loading(
+                                                                            dcc.Graph(
+                                                                                id="state-choropleth",
+                                                                                config={
+                                                                                    "displayModeBar": False
+                                                                                },
+                                                                            ),
+                                                                        )
+                                                                    ),
+                                                                ]
+                                                            ),
+                                                        ]
+                                                    )
+                                                ],
+                                                width=12,
+                                            )
+                                        ],
+                                        style={
+                                            "padding-top": "10px",
+                                            "padding-bottom": "10px",
+                                        },
+                                    ),
+                                ],
+                                style={"padding-top": "10px", "padding-bottom": "10px"},
+                            ),
+                        ],
+                        label="National Polls",
+                    ),
+                    dbc.Tab(
+                        [
+                            dbc.Row(
+                                [
+                                    dbc.Col(
+                                        [
+                                            dcc.Dropdown(
+                                                id="trial-count",
+                                                options=[
+                                                    {
+                                                        "label": "10,000",
+                                                        "value": "10000",
+                                                    },
+                                                    {
+                                                        "label": "50,000",
+                                                        "value": "50000",
+                                                    },
+                                                    {
+                                                        "label": "100,000",
+                                                        "value": "100000",
+                                                    },
+                                                    {
+                                                        "label": "1,000,000",
+                                                        "value": "1000000",
+                                                    },
+                                                ],
+                                                placeholder="Select Number of Trials",
+                                                value=10000,
+                                                clearable=False,
+                                            )
+                                        ]
+                                    ),
+                                    dbc.Col(
+                                        [
+                                            html.Button(
+                                                "Run Simulation", id="run-simulation"
+                                            )
+                                        ]
+                                    ),
+                                ],
+                                style={"padding-top": "10px", "padding-bottom": "10px"},
+                            ),
+                            dbc.Row(
                                 dbc.Col(
-                                    [
-                                        dbc.Card(
-                                            [
-                                                dbc.CardHeader("Current Polls"),
-                                                dbc.CardBody(
-                                                    [
-                                                        dbc.Row(
-                                                            [
-                                                                dbc.Col(
-                                                                    dbc.Card(
-                                                                        dcc.Graph(
-                                                                            id="current-standing-pie",
-                                                                            config={
-                                                                                "displayModeBar": False
-                                                                            },
-                                                                        ),
-                                                                    ),
-                                                                    sm=12,
-                                                                    xxl=4,
-                                                                ),
-                                                                dbc.Col(
-                                                                    dbc.Card(
-                                                                        dcc.Graph(
-                                                                            id="favorability-stacked-bar",
-                                                                            config={
-                                                                                "displayModeBar": False
-                                                                            },
-                                                                        ),
-                                                                    ),
-                                                                    sm=12,
-                                                                    xxl=8,
-                                                                ),
-                                                            ]
-                                                        )
-                                                    ]
-                                                ),
-                                            ]
-                                        )
-                                    ],
-                                    width=12,
+                                    dcc.Loading(
+                                        id="loading2",
+                                        children=[
+                                            dcc.Graph(
+                                                id="power-bar",
+                                                config={"displayModeBar": False},
+                                            )
+                                        ],
+                                        type="circle",
+                                    ),
                                 )
-                            ],
-                            style={"padding-top": "10px", "padding-bottom": "10px"},
-                        ),
-                        dbc.Row(
-                            [
-                                dbc.Col(
-                                    [
-                                        dbc.Card(
-                                            [
-                                                dbc.CardHeader("Historical Polls"),
-                                                dbc.CardBody(
-                                                    [
-                                                        dbc.Row(
-                                                            [
-                                                                dbc.Col(
-                                                                    dbc.Card(
-                                                                        dcc.Graph(
-                                                                            id="historical-line",
-                                                                            config={
-                                                                                "displayModeBar": False
-                                                                            },
-                                                                        ),
-                                                                        className="w-100 mb-3",
-                                                                    ),
-                                                                    sm=12,
-                                                                    xl=6,
-                                                                ),
-                                                                dbc.Col(
-                                                                    dbc.Card(
-                                                                        dcc.Graph(
-                                                                            id="favorability-trend",
-                                                                            config={
-                                                                                "displayModeBar": False
-                                                                            },
-                                                                        ),
-                                                                    ),
-                                                                    sm=12,
-                                                                    xl=6,
-                                                                ),
-                                                            ]
-                                                        )
-                                                    ]
-                                                ),
-                                            ]
-                                        )
-                                    ],
-                                    width=12,
-                                ),
-                                dbc.Row(
-                                    [
-                                        dbc.Col(
-                                            [
-                                                dbc.Card(
-                                                    [
-                                                        dbc.CardHeader(
-                                                            "Current Standings"
-                                                        ),
-                                                        dbc.CardBody(
-                                                            [
-                                                                dbc.Card(
-                                                                    dcc.Graph(
-                                                                        id="state-choropleth",
-                                                                        config={
-                                                                            "displayModeBar": False
-                                                                        },
-                                                                    ),
-                                                                ),
-                                                            ]
-                                                        ),
-                                                    ]
-                                                )
-                                            ],
-                                            width=12,
-                                        )
-                                    ],
-                                    style={
-                                        "padding-top": "10px",
-                                        "padding-bottom": "10px",
-                                    },
-                                ),
-                            ],
-                            style={"padding-top": "10px", "padding-bottom": "10px"},
-                        ),
-                    ],
-                    label="National Polls",
-                ),
-                dbc.Tab(
-                    [
-                        dbc.Row(
-                            [
-                                dbc.Col(
-                                    [
-                                        dcc.Dropdown(
-                                            id="trial-count",
-                                            options=[
-                                                {"label": "10,000", "value": "10000"},
-                                                {"label": "50,000", "value": "50000"},
-                                                {"label": "100,000", "value": "100000"},
-                                                {
-                                                    "label": "1,000,000",
-                                                    "value": "1000000",
-                                                },
-                                            ],
-                                            placeholder="Select Number of Trials",
-                                            value=10000,
-                                            clearable=False,
-                                        )
-                                    ]
-                                ),
-                                dbc.Col(
-                                    [html.Button("Run Simulation", id="run-simulation")]
-                                ),
-                            ],
-                            style={"padding-top": "10px", "padding-bottom": "10px"},
-                        ),
-                        dbc.Row(
-                            dbc.Col(
-                                dcc.Loading(
-                                    id="loading2",
-                                    children=[
-                                        dcc.Graph(
-                                            id="power-bar",
-                                            config={"displayModeBar": False},
-                                        )
-                                    ],
-                                    type="circle",
-                                ),
-                            )
-                        ),
-                        dbc.Row(
-                            [
-                                dbc.Col(
-                                    [
-                                        dcc.Loading(
-                                            id="loading",
-                                            children=[html.Div(sim_table)],
-                                            type="circle",
-                                        ),
-                                    ]
-                                )
-                            ]
-                        ),
-                    ],
-                    label="State Political Power",
-                ),
-            ]
-        ),
-    ]
+                            ),
+                            dbc.Row(
+                                [
+                                    dbc.Col(
+                                        [
+                                            dcc.Loading(
+                                                id="loading",
+                                                children=[html.Div(sim_table)],
+                                                type="circle",
+                                            ),
+                                        ]
+                                    )
+                                ]
+                            ),
+                        ],
+                        label="State Political Power",
+                    ),
+                ]
+            ),
+        ]
+    )
 )
 
 
