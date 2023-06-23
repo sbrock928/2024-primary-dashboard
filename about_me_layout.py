@@ -15,6 +15,12 @@ about_me_layout = html.Div(
                     external_link=True,
                     target="blank",
                 ),
+                dbc.NavLink(
+                    "Github",
+                    href="https://github.com/sbrock928/professional-portfolio",
+                    external_link=True,
+                    target="blank",
+                ),
             ]
         ),
         html.Iframe(
