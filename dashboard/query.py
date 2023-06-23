@@ -83,23 +83,41 @@ def queryData():
         "https://projects.fivethirtyeight.com/polls/data/presidential_primary_averages.csv",
         engine="python",
     )
-    national_favorability_df = pd.read_csv(
-        "https://projects.fivethirtyeight.com/polls-page/data/favorability_polls.csv",
-        engine="python",
-    )
-    state_polls_df = pd.read_csv(
-        "https://projects.fivethirtyeight.com/polls-page/data/president_primary_polls.csv",
-        engine="python",
-    )
 
     national_avg_poll_df = national_avg_poll_df[national_avg_poll_df["cycle"] == 2024]
     national_avg_poll_df = national_avg_poll_df[import_columns]
 
-    national_favorability_df["politician"] = national_favorability_df[
-        "politician"
+    national_avg_poll_df.rename(
+        columns={
+            "candidate": "Candidate",
+            "pct_estimate": "Percentage",
+            "date": "Date",
+        },
+        inplace=True,
+    )
+
+    national_favorability_df = pd.read_csv(
+        "https://projects.fivethirtyeight.com/polls-page/data/favorability_polls.csv",
+        engine="python",
+    )
+    national_favorability_df.rename(
+        columns={
+            "politician": "Candidate",
+            "favorable": "Favorable",
+            "very_favorable": "Very Favorable",
+            "somewhat_favorable": "Somewhat Favorable",
+            "somewhat_unfavorable": "Somewhat Unfavorable",
+            "very_unfavorable": "Very Unfavorable",
+            "created_at": "Date",
+        },
+        inplace=True,
+    )
+
+    national_favorability_df["Candidate"] = national_favorability_df[
+        "Candidate"
     ].replace(candidate_names)
     national_favorability_df = national_favorability_df[
-        national_favorability_df["politician"].isin(
+        national_favorability_df["Candidate"].isin(
             [
                 "Pence",
                 "Haley",
@@ -112,14 +130,26 @@ def queryData():
         )
     ]
 
+    state_polls_df = pd.read_csv(
+        "https://projects.fivethirtyeight.com/polls-page/data/president_primary_polls.csv",
+        engine="python",
+    )
+
+    state_polls_df.rename(
+        columns={
+            "created_at": "Date",
+            "candidate_name": "Candidate",
+            "pct": "Percentage",
+        },
+        inplace=True,
+    )
+
     state_polls_df["Code"] = state_polls_df["state"].map(code)
     state_polls_df["state"] = state_polls_df["state"].map(code)
     state_polls_df = state_polls_df[~state_polls_df.Code.isnull()]
-    state_polls_df["candidate_name"] = state_polls_df["candidate_name"].replace(
-        candidate_names
-    )
+    state_polls_df["Candidate"] = state_polls_df["Candidate"].replace(candidate_names)
     state_polls_df = state_polls_df[
-        state_polls_df["candidate_name"].isin(
+        state_polls_df["Candidate"].isin(
             [
                 "Pence",
                 "Haley",

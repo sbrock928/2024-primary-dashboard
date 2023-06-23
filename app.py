@@ -8,7 +8,9 @@ from dashboard.about_me_layout import about_me_layout
 from sidebar import sidebar
 from dash_bootstrap_templates import load_figure_template
 
-dbc_css = ("https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates@V1.0.2/dbc.min.css")
+dbc_css = (
+    "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates@V1.0.2/dbc.min.css"
+)
 
 load_figure_template("cosmo")
 
@@ -24,7 +26,9 @@ app.config.suppress_callback_exceptions = True
 app.layout = html.Div(
     [
         dcc.Location(id="url", refresh=False),
-        dbc.Container([sidebar, html.Div(id="page-content")] ,className="dbc",fluid=True),
+        dbc.Container(
+            [sidebar, html.Div(id="page-content")], className="dbc", fluid=True
+        ),
         dcc.Interval(
             id="interval-component", interval=1, n_intervals=0, max_intervals=1
         ),

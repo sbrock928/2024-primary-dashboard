@@ -324,9 +324,10 @@ rep_primary_layout = dcc.Loading(
 def update(n):
     national_avg_poll_df, national_favorability_df, state_polls_df = query.queryData()
 
+    # Replace this with actual list
     national_favorability_df = national_favorability_df.loc[
-        national_favorability_df["politician"].isin(
-            national_avg_poll_df["candidate"].unique()
+        national_favorability_df["Candidate"].isin(
+            national_avg_poll_df["Candidate"].unique()
         )
     ]
 

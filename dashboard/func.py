@@ -8,16 +8,14 @@ import numpy as np
 
 
 def state_standing_map(df):
-    df["start_date"] = pd.to_datetime(df["start_date"])
+    df["Date"] = pd.to_datetime(df["Date"])
 
-    df = df.loc[df.groupby(["Code", "candidate_name"]).start_date.idxmax()].sort_values(
-        ["pct"], ascending=False
+    df = df.loc[df.groupby(["Code", "Candidate"]).Date.idxmax()].sort_values(
+        ["Percentage"], ascending=False
     )
-    df["max"] = df.groupby("Code")["pct"].transform("max")
-    winner = df.groupby("Code").apply(
-        lambda x: x.loc[x["max"].idxmax(), "candidate_name"]
-    )
-    winner.name = "winner"
+    df["max"] = df.groupby("Code")["Percentage"].transform("max")
+    winner = df.groupby("Code").apply(lambda x: x.loc[x["max"].idxmax(), "Candidate"])
+    winner.name = "Winner"
     df = df.merge(winner, how="left", left_on="Code", right_on="Code")
 
     for col in df.columns:
@@ -27,8 +25,8 @@ def state_standing_map(df):
         df,
         locationmode="USA-states",
         locations="Code",
-        color="winner",
-        hover_data=["pct"],
+        color="Winner",
+        hover_data=["Percentage"],
     )
 
     fig.update_geos(fitbounds="locations")
@@ -37,58 +35,62 @@ def state_standing_map(df):
 
 
 def national_average_trend(df):
-    df["date"] = pd.to_datetime(df["date"])
+    df["Date"] = pd.to_datetime(df["Date"])
 
     fig = px.scatter(
         df,
-        x="date",
-        y="pct_estimate",
-        color="candidate",
+        x="Date",
+        y="Percentage",
+        color="Candidate",
         trendline="rolling",
         trendline_options=dict(window=5),
         title="Standing",
     )
 
+    fig.update_layout(legend_title="")
+
     return fig
 
 
 def national_favorability_trend(df):
-    df["start_date"] = pd.to_datetime(df["start_date"])
+    df["Date"] = pd.to_datetime(df["Date"])
 
-    fig = px.line(
-        df, x="start_date", y="favorable", color="politician", title="Favorability"
-    )
+    fig = px.line(df, x="Date", y="Favorable", color="Candidate", title="Favorability")
+
+    fig.update_layout(legend_title="")
 
     return fig
 
 
 def national_favorability_stacked_bar(df):
-    df["start_date"] = pd.to_datetime(df["start_date"])
+    df["Date"] = pd.to_datetime(df["Date"])
 
-    df = df.loc[df.groupby(["politician"]).start_date.idxmax()]
+    df = df.loc[df.groupby(["Candidate"]).Date.idxmax()]
 
     fig = px.bar(
         df,
-        y="politician",
+        y="Candidate",
         x=[
-            "very_favorable",
-            "somewhat_favorable",
-            "somewhat_unfavorable",
-            "very_unfavorable",
+            "Very Favorable",
+            "Somewhat Favorable",
+            "Somewhat Unfavorable",
+            "Very Unfavorable",
         ],
         title="Favorability",
         orientation="h",
         text_auto=True,
     )
 
+    fig.update_layout(legend_title="")
+
     return fig
 
 
 def national_standing_pie(df):
-    df["date"] = pd.to_datetime(df["date"])
-    df = df.loc[df.groupby(["candidate"]).date.idxmax()]
+    df["Date"] = pd.to_datetime(df["Date"])
+    df = df.loc[df.groupby(["Candidate"]).Date.idxmax()]
 
-    fig = px.pie(df, values="pct_estimate", names="candidate", title="Standing")
+    fig = px.pie(df, values="Percentage", names="Candidate", title="Standing")
 
     return fig
 
