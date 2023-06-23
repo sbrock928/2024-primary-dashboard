@@ -120,8 +120,8 @@ summary = html.Div(
                                                                             config={
                                                                                 "displayModeBar": False
                                                                             },
-                                                                        ),className="w-100 mb-3"
-                                                                    ),
+                                                                        ),
+                                                                    ), sm= 12, xxl=4
                                                                 ),
                                                                 dbc.Col(
                                                                     dbc.Card(
@@ -130,8 +130,8 @@ summary = html.Div(
                                                                             config={
                                                                                 "displayModeBar": False
                                                                             },
-                                                                        ), className="w-100 mb-3"
-                                                                    ),
+                                                                        ),
+                                                                    ), sm=12, xxl=8
                                                                 )
                                                             ]
                                                         )
@@ -155,29 +155,30 @@ summary = html.Div(
                                                 dbc.CardHeader("Historical Polls"),
                                                 dbc.CardBody(
                                                     [
-                                                        dbc.Card(
-                                                            dcc.Graph(
-                                                                id="historical-line",
-                                                                config={
-                                                                    "displayModeBar": False
-                                                                },
-                                                            ),
-                                                            style={
-                                                                "display": "inline-block",
-                                                            },
-                                                        ),
-                                                        dbc.Card(
-                                                            dcc.Graph(
-                                                                id="favorability-trend",
-                                                                config={
-                                                                    "displayModeBar": False
-                                                                },
-                                                                style = {"width": "100%"}
-                                                            ),
-                                                            style={
-                                                                "display": "inline-block",
-                                                            },
-                                                        ),
+                                                        dbc.Row(
+                                                            [
+                                                                dbc.Col(
+                                                                    dbc.Card(
+                                                                        dcc.Graph(
+                                                                            id="historical-line",
+                                                                            config={
+                                                                                "displayModeBar": False
+                                                                            },
+                                                                        ), className="w-100 mb-3"
+                                                                    ), sm = 12, xl=6
+                                                                ),
+                                                                dbc.Col(
+                                                                    dbc.Card(
+                                                                        dcc.Graph(
+                                                                            id="favorability-trend",
+                                                                            config={
+                                                                                "displayModeBar": False
+                                                                            },
+                                                                        ),
+                                                                    ), sm =12, xl =6
+                                                                )
+                                                            ]
+                                                        )
                                                     ]
                                                 ),
                                             ]
