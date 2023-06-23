@@ -2,9 +2,7 @@ import plotly.express as px
 from collections import OrderedDict
 from random import randint
 import pandas as pd
-import plotly.graph_objects as go
-import datetime
-import numpy as np
+from dashboard.constants import candidate_color_map
 
 
 def state_standing_map(df):
@@ -45,6 +43,14 @@ def national_average_trend(df):
         trendline="rolling",
         trendline_options=dict(window=5),
         title="Standing",
+        color_discrete_map={
+            "Trump": "red",
+            "DeSantis": "blue",
+            "Pence": "green",
+            "Haley": "goldenrod",
+            "T.Scott": "magenta",
+            "Hutchinson": "purple",
+            "Ramaswamy": "yellow"}
     )
 
     fig.update_layout(legend_title="")
@@ -55,7 +61,14 @@ def national_average_trend(df):
 def national_favorability_trend(df):
     df["Date"] = pd.to_datetime(df["Date"])
 
-    fig = px.line(df, x="Date", y="Favorable", color="Candidate", title="Favorability")
+    fig = px.line(df, x="Date", y="Favorable", color="Candidate", title="Favorability", color_discrete_map={
+        "Trump": "red",
+        "DeSantis": "blue",
+        "Pence": "green",
+        "Haley": "goldenrod",
+        "T.Scott": "magenta",
+        "Hutchinson": "purple",
+        "Ramaswamy": "yellow"})
 
     fig.update_layout(legend_title="")
 
@@ -79,6 +92,12 @@ def national_favorability_stacked_bar(df):
         title="Favorability",
         orientation="h",
         text_auto=True,
+        color_discrete_map={
+        "Very Unfavorable": "red",
+        "Very Favorable": "green",
+        "Somewhat Unfavorable": "Orange",
+        "Somewhat Favorable": "yellow"}
+
     )
 
     fig.update_layout(legend_title="")
@@ -90,7 +109,14 @@ def national_standing_pie(df):
     df["Date"] = pd.to_datetime(df["Date"])
     df = df.loc[df.groupby(["Candidate"]).Date.idxmax()]
 
-    fig = px.pie(df, values="Percentage", names="Candidate", title="Standing")
+    fig = px.pie(df, values="Percentage", names="Candidate", title="Standing",color_discrete_map={
+        "Trump": "red",
+        "DeSantis": "blue",
+        "Pence": "green",
+        "Haley": "goldenrod",
+        "T.Scott": "magenta",
+        "Hutchinson": "purple",
+        "Ramaswamy": "yellow"})
 
     return fig
 

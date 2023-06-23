@@ -1,10 +1,9 @@
 import dash
 import dash_bootstrap_components as dbc
-import pandas as pd
 
 from dash import html, dcc, Input, Output, State
 from dashboard.layout import rep_primary_layout
-from dashboard.about_me_layout import about_me_layout
+from about_me_layout import about_me_layout
 from sidebar import sidebar
 from dash_bootstrap_templates import load_figure_template
 
