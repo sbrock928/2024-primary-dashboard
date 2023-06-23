@@ -6,14 +6,6 @@ about_me_layout = html.Div(
     [
         html.H2(
             "About Me",
-            style={
-                "padding-left": 25,
-                "padding-top": 10,
-                "padding-bottom": 5,
-                "background-color": "#FF0000",
-                "color": "white",
-                "border-bottom": "black",
-            },
         ),
         html.Div(
             [

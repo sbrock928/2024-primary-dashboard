@@ -5,7 +5,7 @@ import dash_bootstrap_components as dbc
 # it consists of a title, and a toggle, the latter is hidden on large screens
 sidebar_header = dbc.Row(
     [
-        dbc.Col(html.H2("Stephen Brock", className="display-4")),
+        dbc.Col(html.H2("Stephen Brock")),
         dbc.Col(
             [
                 html.Button(

@@ -6,10 +6,15 @@ from dash import html, dcc, Input, Output, State
 from dashboard.layout import rep_primary_layout
 from dashboard.about_me_layout import about_me_layout
 from sidebar import sidebar
+from dash_bootstrap_templates import load_figure_template
+
+dbc_css = ("https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates@V1.0.2/dbc.min.css")
+
+load_figure_template("cosmo")
 
 app = dash.Dash(
     __name__,
-    external_stylesheets=[dbc.themes.BOOTSTRAP],
+    external_stylesheets=[dbc.themes.COSMO, dbc_css],
     meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}],
 )
 server = app.server
@@ -19,7 +24,7 @@ app.config.suppress_callback_exceptions = True
 app.layout = html.Div(
     [
         dcc.Location(id="url", refresh=False),
-        dbc.Container([sidebar, html.Div(id="page-content")], fluid=True),
+        dbc.Container([sidebar, html.Div(id="page-content")] ,className="dbc",fluid=True),
         dcc.Interval(
             id="interval-component", interval=1, n_intervals=0, max_intervals=1
         ),

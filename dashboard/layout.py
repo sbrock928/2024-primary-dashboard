@@ -90,14 +90,6 @@ rep_primary_layout = dcc.Loading(
             dcc.Store(id="state-polls-store"),
             html.H2(
                 "Republican Primary Dataset",
-                style={
-                    "padding-left": 25,
-                    "padding-top": 10,
-                    "padding-bottom": 5,
-                    "background-color": "#FF0000",
-                    "color": "white",
-                    "border-bottom": "black",
-                },
             ),
             dbc.Tabs(
                 [
