@@ -61,10 +61,13 @@ candidate_names = {
     "Mike Pence": "Pence",
     "Nikki Haley": "Haley",
     "Ron DeSantis": "DeSantis",
-    "Tim Scott": "T. Scott",
+    "Tim Scott": "Scott",
+    "T. Scott": "Scott",
     "Donald Trump": "Trump",
     "Asa Hutchinson": "Hutchinson",
     "Vivek G. Ramaswamy": "Ramaswamy",
+    "Doug Burgum": "Burgum",
+    "Chris Christie": "Christie",
 }
 import_columns = [
     "candidate",
@@ -95,6 +98,24 @@ def queryData():
         },
         inplace=True,
     )
+    national_avg_poll_df["Candidate"] = national_avg_poll_df["Candidate"].replace(
+        candidate_names
+    )
+    national_avg_poll_df = national_avg_poll_df[
+        national_avg_poll_df["Candidate"].isin(
+            [
+                "Pence",
+                "Haley",
+                "DeSantis",
+                "Scott",
+                "Trump",
+                "Ramaswamy",
+                "Hutchinson",
+                "Burgum",
+                "Christie",
+            ]
+        )
+    ]
 
     national_favorability_df = pd.read_csv(
         "https://projects.fivethirtyeight.com/polls-page/data/favorability_polls.csv",
@@ -122,10 +143,12 @@ def queryData():
                 "Pence",
                 "Haley",
                 "DeSantis",
-                "T. Scott",
+                "Scott",
                 "Trump",
-                "Hutchinson",
                 "Ramaswamy",
+                "Hutchinson",
+                "Burgum",
+                "Christie",
             ]
         )
     ]
@@ -154,10 +177,12 @@ def queryData():
                 "Pence",
                 "Haley",
                 "DeSantis",
-                "T. Scott",
+                "Scott",
                 "Trump",
-                "Hutchinson",
                 "Ramaswamy",
+                "Hutchinson",
+                "Burgum",
+                "Christie",
             ]
         )
     ]

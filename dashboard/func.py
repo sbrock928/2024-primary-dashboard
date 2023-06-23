@@ -2,7 +2,8 @@ import plotly.express as px
 from collections import OrderedDict
 from random import randint
 import pandas as pd
-from dashboard.constants import candidate_color_map
+import plotly.graph_objects as go
+import datetime
 
 
 def state_standing_map(df):
@@ -32,25 +33,27 @@ def state_standing_map(df):
     return fig
 
 
-def national_average_trend(df):
+def national_standing_trend(df, candidate):
     df["Date"] = pd.to_datetime(df["Date"])
 
-    fig = px.scatter(
+    df = df[df["Candidate"] == candidate]
+    fig = px.line(
         df,
         x="Date",
         y="Percentage",
         color="Candidate",
-        trendline="rolling",
-        trendline_options=dict(window=5),
         title="Standing",
         color_discrete_map={
             "Trump": "red",
             "DeSantis": "blue",
             "Pence": "green",
             "Haley": "goldenrod",
-            "T.Scott": "magenta",
+            "Scott": "magenta",
             "Hutchinson": "purple",
-            "Ramaswamy": "yellow"}
+            "Ramaswamy": "yellow",
+            "Burgum": "orange",
+            "Christie": "teal",
+        },
     )
 
     fig.update_layout(legend_title="")
@@ -58,17 +61,32 @@ def national_average_trend(df):
     return fig
 
 
-def national_favorability_trend(df):
-    df["Date"] = pd.to_datetime(df["Date"])
+def national_favorability_trend(df, candidate):
+    df["Date"] = pd.to_datetime(df["Date"], utc=False)
 
-    fig = px.line(df, x="Date", y="Favorable", color="Candidate", title="Favorability", color_discrete_map={
-        "Trump": "red",
-        "DeSantis": "blue",
-        "Pence": "green",
-        "Haley": "goldenrod",
-        "T.Scott": "magenta",
-        "Hutchinson": "purple",
-        "Ramaswamy": "yellow"})
+    df = df[df["Candidate"] == candidate]
+    df = df.groupby(["Candidate", "Date"])["Favorable"].mean().round(2).reset_index()
+
+    fig = px.scatter(
+        df,
+        x="Date",
+        y="Favorable",
+        color="Candidate",
+        title="Favorability",
+        trendline="rolling",
+        trendline_options=dict(window=1),
+        color_discrete_map={
+            "Trump": "red",
+            "DeSantis": "blue",
+            "Pence": "green",
+            "Haley": "goldenrod",
+            "Scott": "magenta",
+            "Hutchinson": "purple",
+            "Ramaswamy": "yellow",
+            "Burgum": "orange",
+            "Christie": "teal",
+        },
+    )
 
     fig.update_layout(legend_title="")
 
@@ -93,11 +111,11 @@ def national_favorability_stacked_bar(df):
         orientation="h",
         text_auto=True,
         color_discrete_map={
-        "Very Unfavorable": "red",
-        "Very Favorable": "green",
-        "Somewhat Unfavorable": "Orange",
-        "Somewhat Favorable": "yellow"}
-
+            "Very Unfavorable": "red",
+            "Very Favorable": "green",
+            "Somewhat Unfavorable": "Orange",
+            "Somewhat Favorable": "yellow",
+        },
     )
 
     fig.update_layout(legend_title="")
@@ -109,14 +127,44 @@ def national_standing_pie(df):
     df["Date"] = pd.to_datetime(df["Date"])
     df = df.loc[df.groupby(["Candidate"]).Date.idxmax()]
 
-    fig = px.pie(df, values="Percentage", names="Candidate", title="Standing",color_discrete_map={
-        "Trump": "red",
-        "DeSantis": "blue",
-        "Pence": "green",
-        "Haley": "goldenrod",
-        "T.Scott": "magenta",
-        "Hutchinson": "purple",
-        "Ramaswamy": "yellow"})
+    fig = px.pie(
+        df,
+        values="Percentage",
+        names="Candidate",
+        title="Standing",
+        color_discrete_map={
+            "Trump": "red",
+            "DeSantis": "blue",
+            "Pence": "green",
+            "Haley": "goldenrod",
+            "Scott": "magenta",
+            "Hutchinson": "purple",
+            "Ramaswamy": "yellow",
+            "Burgum": "organge",
+            "Christie": "teal",
+        },
+    )
+
+    return fig
+
+
+def kpi_card(df, candidate):
+    df["Date"] = pd.to_datetime(df["Date"])
+    df = df[df["Candidate"] == candidate]
+
+    current_result = df.loc[df.Date.idxmax()]
+    past_result = df[
+        df["Date"] >= (current_result["Date"] - pd.Timedelta(days=30))
+    ].iloc[-1]
+
+    fig = go.Figure(
+        go.Indicator(
+            mode="number+delta",
+            value=current_result["Percentage"],
+            delta={"position": "top", "reference": past_result["Percentage"]},
+            domain={"x": [0, 1], "y": [0, 1]},
+        ),
+    )
 
     return fig
 
