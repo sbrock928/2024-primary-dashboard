@@ -3,7 +3,7 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 
 from dash import html, dcc, Input, Output, State
-from dashboard.layout import summary
+from dashboard.layout import rep_primary_layout
 from sidebar import sidebar
 
 app = dash.Dash(
@@ -27,9 +27,9 @@ app.layout = html.Div(
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def render_page_content(pathname):
     if pathname == "/":
-        return html.P("This is the content of the home page!")
+        return rep_primary_layout
     elif pathname == "/primary":
-        return summary
+        return rep_primary_layout
 
     # If the user tries to reach a different page, return a 404 message
     return html.Div(

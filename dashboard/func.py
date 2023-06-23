@@ -46,7 +46,7 @@ def national_average_trend(df):
         color="candidate",
         trendline="rolling",
         trendline_options=dict(window=5),
-        title='Standing',
+        title="Standing",
     )
 
     return fig
@@ -79,20 +79,19 @@ def national_favorability_stacked_bar(df):
         title="Favorability",
         orientation="h",
         text_auto=True,
-
-
     )
 
     return fig
+
 
 def national_standing_pie(df):
     df["date"] = pd.to_datetime(df["date"])
     df = df.loc[df.groupby(["candidate"]).date.idxmax()]
 
-    fig = px.pie(df, values='pct_estimate', names='candidate', title='Standing')
-
+    fig = px.pie(df, values="pct_estimate", names="candidate", title="Standing")
 
     return fig
+
 
 def power_bar(df):
     fig = px.bar(

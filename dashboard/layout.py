@@ -82,7 +82,7 @@ state_table = dash_table.DataTable(
 )
 
 
-summary = html.Div(
+rep_primary_layout = html.Div(
     [
         dcc.Store(id="national-average-store"),
         dcc.Store(id="national-favorability-store"),
@@ -121,7 +121,9 @@ summary = html.Div(
                                                                                 "displayModeBar": False
                                                                             },
                                                                         ),
-                                                                    ), sm= 12, xxl=4
+                                                                    ),
+                                                                    sm=12,
+                                                                    xxl=4,
                                                                 ),
                                                                 dbc.Col(
                                                                     dbc.Card(
@@ -131,8 +133,10 @@ summary = html.Div(
                                                                                 "displayModeBar": False
                                                                             },
                                                                         ),
-                                                                    ), sm=12, xxl=8
-                                                                )
+                                                                    ),
+                                                                    sm=12,
+                                                                    xxl=8,
+                                                                ),
                                                             ]
                                                         )
                                                     ]
@@ -145,7 +149,6 @@ summary = html.Div(
                             ],
                             style={"padding-top": "10px", "padding-bottom": "10px"},
                         ),
-
                         dbc.Row(
                             [
                                 dbc.Col(
@@ -164,8 +167,11 @@ summary = html.Div(
                                                                             config={
                                                                                 "displayModeBar": False
                                                                             },
-                                                                        ), className="w-100 mb-3"
-                                                                    ), sm = 12, xl=6
+                                                                        ),
+                                                                        className="w-100 mb-3",
+                                                                    ),
+                                                                    sm=12,
+                                                                    xl=6,
                                                                 ),
                                                                 dbc.Col(
                                                                     dbc.Card(
@@ -175,8 +181,10 @@ summary = html.Div(
                                                                                 "displayModeBar": False
                                                                             },
                                                                         ),
-                                                                    ), sm =12, xl =6
-                                                                )
+                                                                    ),
+                                                                    sm=12,
+                                                                    xl=6,
+                                                                ),
                                                             ]
                                                         )
                                                     ]
@@ -192,7 +200,9 @@ summary = html.Div(
                                             [
                                                 dbc.Card(
                                                     [
-                                                        dbc.CardHeader("Current Standings"),
+                                                        dbc.CardHeader(
+                                                            "Current Standings"
+                                                        ),
                                                         dbc.CardBody(
                                                             [
                                                                 dbc.Card(
@@ -211,7 +221,10 @@ summary = html.Div(
                                             width=12,
                                         )
                                     ],
-                                    style={"padding-top": "10px", "padding-bottom": "10px"},
+                                    style={
+                                        "padding-top": "10px",
+                                        "padding-bottom": "10px",
+                                    },
                                 ),
                             ],
                             style={"padding-top": "10px", "padding-bottom": "10px"},
@@ -309,7 +322,8 @@ def update(n):
 
 
 @callback(
-    [   Output("current-standing-pie", "figure"),
+    [
+        Output("current-standing-pie", "figure"),
         Output("historical-line", "figure"),
         Output("favorability-trend", "figure"),
         Output("favorability-stacked-bar", "figure"),

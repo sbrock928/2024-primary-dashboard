@@ -58,14 +58,13 @@ code = {
 }
 
 candidate_names = {
-    "Pence": "Mike Pence",
-    "Haley": "Nikki Haley",
-    "DeSantis": "Ron DeSantis",
-    "T. Scott": "Tim Scott",
-    "Trump": "Donald Trump",
-    "Hutchinson": "Asa Hutchinson",
-    "Ramaswamy": "Vivek G. Ramaswamy",
-    "Burgum": "Doug Burgum"
+    "Mike Pence": "Pence",
+    "Nikki Haley": "Haley",
+    "Ron DeSantis": "DeSantis",
+    "Tim Scott": "T. Scott",
+    "Donald Trump": "Trump",
+    "Asa Hutchinson": "Hutchinson",
+    "Vivek G. Ramaswamy": "Ramaswamy",
 }
 import_columns = [
     "candidate",
@@ -95,24 +94,40 @@ def queryData():
 
     national_avg_poll_df = national_avg_poll_df[national_avg_poll_df["cycle"] == 2024]
     national_avg_poll_df = national_avg_poll_df[import_columns]
-    national_avg_poll_df["candidate"] = national_avg_poll_df["candidate"].replace(
-        candidate_names
-    )
+
+    national_favorability_df["politician"] = national_favorability_df[
+        "politician"
+    ].replace(candidate_names)
+    national_favorability_df = national_favorability_df[
+        national_favorability_df["politician"].isin(
+            [
+                "Pence",
+                "Haley",
+                "DeSantis",
+                "T. Scott",
+                "Trump",
+                "Hutchinson",
+                "Ramaswamy",
+            ]
+        )
+    ]
 
     state_polls_df["Code"] = state_polls_df["state"].map(code)
     state_polls_df["state"] = state_polls_df["state"].map(code)
     state_polls_df = state_polls_df[~state_polls_df.Code.isnull()]
+    state_polls_df["candidate_name"] = state_polls_df["candidate_name"].replace(
+        candidate_names
+    )
     state_polls_df = state_polls_df[
         state_polls_df["candidate_name"].isin(
             [
-                "Mike Pence",
-                "Nikki Haley",
-                "Ron DeSantis",
-                "Tim Scott",
-                "Donald Trump",
-                "Asa Hutchinson",
-                "Vivek G. Ramaswamy",
-                "Doug Burgum"
+                "Pence",
+                "Haley",
+                "DeSantis",
+                "T. Scott",
+                "Trump",
+                "Hutchinson",
+                "Ramaswamy",
             ]
         )
     ]
