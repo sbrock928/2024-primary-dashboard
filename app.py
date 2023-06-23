@@ -4,6 +4,7 @@ import pandas as pd
 
 from dash import html, dcc, Input, Output, State
 from dashboard.layout import rep_primary_layout
+from dashboard.about_me_layout import about_me_layout
 from sidebar import sidebar
 
 app = dash.Dash(
@@ -29,7 +30,7 @@ app.layout = html.Div(
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def render_page_content(pathname):
     if pathname == "/":
-        return html.P("This is the content of the home page!")
+        return about_me_layout
     elif pathname == "/primary":
         return rep_primary_layout
 
