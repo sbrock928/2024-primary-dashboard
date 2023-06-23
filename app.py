@@ -19,7 +19,7 @@ app.layout = html.Div(
     [
         dcc.Location(id="url"),
         dbc.Container([sidebar, html.Div(id="page-content")], fluid=True),
-        dcc.Interval(id="interval-component", interval=30000, n_intervals=1),
+        dcc.Interval(id="interval-component", interval=1, n_intervals=0, max_intervals=1),
     ]
 )
 
@@ -27,7 +27,7 @@ app.layout = html.Div(
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def render_page_content(pathname):
     if pathname == "/":
-        return rep_primary_layout
+        return html.P("This is the content of the home page!")
     elif pathname == "/primary":
         return rep_primary_layout
 
