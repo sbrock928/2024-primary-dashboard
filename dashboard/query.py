@@ -98,6 +98,8 @@ def queryData():
         },
         inplace=True,
     )
+
+
     national_avg_poll_df["Candidate"] = national_avg_poll_df["Candidate"].replace(
         candidate_names
     )
@@ -129,7 +131,7 @@ def queryData():
             "somewhat_favorable": "Somewhat Favorable",
             "somewhat_unfavorable": "Somewhat Unfavorable",
             "very_unfavorable": "Very Unfavorable",
-            "created_at": "Date",
+            "end_date": "Date",
         },
         inplace=True,
     )
@@ -160,12 +162,13 @@ def queryData():
 
     state_polls_df.rename(
         columns={
-            "created_at": "Date",
+            "end_date": "Date",
             "candidate_name": "Candidate",
             "pct": "Percentage",
         },
         inplace=True,
     )
+
 
     state_polls_df["Code"] = state_polls_df["state"].map(code)
     state_polls_df["state"] = state_polls_df["state"].map(code)
