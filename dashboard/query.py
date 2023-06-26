@@ -99,7 +99,6 @@ def queryData():
         inplace=True,
     )
 
-
     national_avg_poll_df["Candidate"] = national_avg_poll_df["Candidate"].replace(
         candidate_names
     )
@@ -127,6 +126,7 @@ def queryData():
         columns={
             "politician": "Candidate",
             "favorable": "Favorable",
+            "unfavorable": "Unfavorable",
             "very_favorable": "Very Favorable",
             "somewhat_favorable": "Somewhat Favorable",
             "somewhat_unfavorable": "Somewhat Unfavorable",
@@ -168,7 +168,6 @@ def queryData():
         },
         inplace=True,
     )
-
 
     state_polls_df["Code"] = state_polls_df["state"].map(code)
     state_polls_df["state"] = state_polls_df["state"].map(code)

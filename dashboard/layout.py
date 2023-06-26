@@ -19,10 +19,12 @@ import datetime
 
 from dashboard import query, func
 
-date_picker = dcc.DatePickerRange(
-    id='date-range',
-    min_date_allowed=datetime.date(2023, 3, 1),
-),
+date_picker = (
+    dcc.DatePickerRange(
+        id="date-range",
+        min_date_allowed=datetime.date(2023, 3, 1),
+    ),
+)
 
 
 sim_table = dash_table.DataTable(
@@ -140,9 +142,13 @@ rep_primary_layout = dcc.Loading(
                 [
                     dbc.Tab(
                         [
-                            dbc.Row(dbc.Col(candidate_dropdown, width=2),style={"padding-top": "10px"}),
                             dbc.Row(
-                                dbc.Col(date_picker,width=4),style={"padding-top": "10px"}
+                                dbc.Col(candidate_dropdown, width=2),
+                                style={"padding-top": "10px"},
+                            ),
+                            dbc.Row(
+                                dbc.Col(date_picker, width=4),
+                                style={"padding-top": "10px"},
                             ),
                             dbc.Row(
                                 [
@@ -150,46 +156,16 @@ rep_primary_layout = dcc.Loading(
                                         [
                                             dbc.Card(
                                                 [
-                                                    dbc.CardHeader("Overall Standing"),
+                                                    dbc.CardHeader("Projected Votes"),
                                                     dbc.CardBody(
                                                         [
                                                             dbc.Row(
                                                                 [
                                                                     dbc.Col(
                                                                         dbc.Card(
-                                                                            dbc.Row(
-                                                                                [
-                                                                                    dbc.Col(
-                                                                                        dcc.Loading(
-                                                                                            dcc.Graph(
-                                                                                                id="standing-kpi-card",
-                                                                                                config={
-                                                                                                    "displayModeBar": False
-                                                                                                },
-                                                                                            ),
-                                                                                        ), sm = 12, xl = 5
-                                                                                    ),
-                                                                                    dbc.Col(
-                                                                                        dcc.Loading(
-                                                                                            dcc.Graph(
-                                                                                                id="national-standing-pie",
-                                                                                                config={
-                                                                                                    "displayModeBar": False
-                                                                                                },
-                                                                                            ),
-                                                                                        ), sm= 12, xl = 7
-                                                                                    ),
-                                                                                ]
-                                                                            )
-                                                                        ),
-                                                                        sm=12,
-                                                                        xl=4,
-                                                                    ),
-                                                                    dbc.Col(
-                                                                        dbc.Card(
                                                                             dcc.Loading(
                                                                                 dcc.Graph(
-                                                                                    id="favorability-kpi-card",
+                                                                                    id="candidate-voting-kpi-card",
                                                                                     config={
                                                                                         "displayModeBar": False
                                                                                     },
@@ -197,14 +173,27 @@ rep_primary_layout = dcc.Loading(
                                                                             )
                                                                         ),
                                                                         sm=12,
-                                                                        xl=2,
+                                                                        xl=3,
                                                                     ),
-
                                                                     dbc.Col(
                                                                         dbc.Card(
                                                                             dcc.Loading(
                                                                                 dcc.Graph(
-                                                                                    id="candidate-standing-v-favorability-trend",
+                                                                                    id="party-voting-pie",
+                                                                                    config={
+                                                                                        "displayModeBar": False
+                                                                                    },
+                                                                                )
+                                                                            ),
+                                                                        ),
+                                                                        sm=12,
+                                                                        xxl=4,
+                                                                    ),
+                                                                    dbc.Col(
+                                                                        dbc.Card(
+                                                                            dcc.Loading(
+                                                                                dcc.Graph(
+                                                                                    id="candidate-voting-trend",
                                                                                     config={
                                                                                         "displayModeBar": False
                                                                                     },
@@ -212,7 +201,7 @@ rep_primary_layout = dcc.Loading(
                                                                             ),
                                                                         ),
                                                                         sm=12,
-                                                                        xxl=4,
+                                                                        xxl=5,
                                                                     ),
                                                                 ]
                                                             )
@@ -237,25 +226,25 @@ rep_primary_layout = dcc.Loading(
                                                         [
                                                             dbc.Row(
                                                                 [
-                                                                    # dbc.Col(
-                                                                    #     dbc.Card(
-                                                                    #         dcc.Loading(
-                                                                    #             dcc.Graph(
-                                                                    #                 id="national-standing-pie",
-                                                                    #                 config={
-                                                                    #                     "displayModeBar": False
-                                                                    #                 },
-                                                                    #             )
-                                                                    #         ),
-                                                                    #     ),
-                                                                    #     sm=12,
-                                                                    #     xxl=4,
-                                                                    # ),
                                                                     dbc.Col(
                                                                         dbc.Card(
                                                                             dcc.Loading(
                                                                                 dcc.Graph(
-                                                                                    id="national-favorability-bar",
+                                                                                    id="candidate-favorability-kpi-card",
+                                                                                    config={
+                                                                                        "displayModeBar": False
+                                                                                    },
+                                                                                )
+                                                                            ),
+                                                                        ),
+                                                                        sm=12,
+                                                                        xxl=3,
+                                                                    ),
+                                                                    dbc.Col(
+                                                                        dbc.Card(
+                                                                            dcc.Loading(
+                                                                                dcc.Graph(
+                                                                                    id="party-favorability-bar",
                                                                                     config={
                                                                                         "displayModeBar": False
                                                                                     },
@@ -269,7 +258,7 @@ rep_primary_layout = dcc.Loading(
                                                                         dbc.Card(
                                                                             dcc.Loading(
                                                                                 dcc.Graph(
-                                                                                    id="national-favorability-trend",
+                                                                                    id="candidate-favorability-trend",
                                                                                     config={
                                                                                         "displayModeBar": False
                                                                                     },
@@ -277,7 +266,7 @@ rep_primary_layout = dcc.Loading(
                                                                             )
                                                                         ),
                                                                         sm=12,
-                                                                        xl=4,
+                                                                        xl=5,
                                                                     ),
                                                                 ]
                                                             )
@@ -326,7 +315,7 @@ rep_primary_layout = dcc.Loading(
                                 style={"padding-top": "10px", "padding-bottom": "10px"},
                             ),
                         ],
-                        label="National Polls",
+                        label="Latest Polls",
                     ),
                     dbc.Tab(
                         [
@@ -421,7 +410,7 @@ rep_primary_layout = dcc.Loading(
 def update(n):
     national_avg_poll_df, national_favorability_df, state_polls_df = query.queryData()
 
-    start_date= (datetime.date.today() - datetime.timedelta(days=30))
+    start_date = datetime.date.today() - datetime.timedelta(days=30)
     end_date = datetime.date.today()
     max_date_allowed = datetime.date.today()
 
@@ -431,18 +420,18 @@ def update(n):
         state_polls_df.to_dict("records"),
         start_date,
         end_date,
-        max_date_allowed
+        max_date_allowed,
     )
 
 
 @callback(
     [
-        Output("standing-kpi-card", "figure"),
-        Output("national-standing-pie", "figure"),
-        Output("candidate-standing-v-favorability-trend", "figure"),
-        Output("favorability-kpi-card", "figure"),
-        Output("national-favorability-trend", "figure"),
-        Output("national-favorability-bar", "figure"),
+        Output("candidate-voting-kpi-card", "figure"),
+        Output("party-voting-pie", "figure"),
+        Output("candidate-voting-trend", "figure"),
+        Output("candidate-favorability-kpi-card", "figure"),
+        Output("candidate-favorability-trend", "figure"),
+        Output("party-favorability-bar", "figure"),
         Output("state-choropleth", "figure"),
     ],
     [
@@ -454,35 +443,43 @@ def update(n):
     ],
 )
 def update_current_standing_figures(
-    national_avg_data, national_favorability_data, state_poll_data, candidate, start_date
+    national_avg_data,
+    national_favorability_data,
+    state_poll_data,
+    candidate,
+    start_date,
 ):
     national_avg_poll_df = pd.DataFrame(national_avg_data)
     national_favorability_df = pd.DataFrame(national_favorability_data)
     state_poll_df = pd.DataFrame(state_poll_data)
 
-    standing_kpi_card = func.standing_kpi_card(national_avg_poll_df, candidate, start_date)
-    national_standing_pie = func.national_standing_pie(national_avg_poll_df)
+    candidate_voting_kpi_card = func.candidate_voting_kpi_card(
+        national_avg_poll_df, candidate, start_date
+    )
+    party_voting_pie = func.party_voting_pie(national_avg_poll_df)
 
-    candidate_standing_vs_favorability_trend = func.candidate_standing_vs_favorability(
-        national_avg_poll_df,national_favorability_df , candidate, start_date
+    candidate_voting_trend = func.candidate_voting_trend(
+        national_avg_poll_df, candidate, start_date
     )
 
-    favorability_kpi_card = func.favorability_kpi_card(national_favorability_df, candidate, start_date)
-
-    national_favorability_trend = func.national_favorability_trend(
+    candidate_favorability_kpi_card = func.candidate_favorability_kpi_card(
         national_favorability_df, candidate, start_date
     )
-    national_favorability_bar = func.national_favorability_stacked_bar(
+
+    national_favorability_trend = func.party_favorability_trend(
+        national_favorability_df, candidate, start_date
+    )
+    national_favorability_bar = func.party_favorability_stacked_bar(
         national_favorability_df
     )
 
     state_standing_map = func.state_standing_map(state_poll_df)
 
     return (
-        standing_kpi_card,
-        national_standing_pie,
-        candidate_standing_vs_favorability_trend,
-        favorability_kpi_card,
+        candidate_voting_kpi_card,
+        party_voting_pie,
+        candidate_voting_trend,
+        candidate_favorability_kpi_card,
         national_favorability_trend,
         national_favorability_bar,
         state_standing_map,

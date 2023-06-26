@@ -15,9 +15,8 @@ color_mapping_dict = dict(
     Ramaswamy="yellow",
     Burgum="orange",
     Christie="teal",
-    Undecided="gray"
+    Undecided="gray",
 )
-
 
 
 def state_standing_map(df):
@@ -47,65 +46,111 @@ def state_standing_map(df):
     return fig
 
 
-def national_standing_trend(df, candidate, start_date):
-
+def candidate_voting_trend(df, candidate, start_date):
     df["Date"] = pd.to_datetime(df["Date"], utc=False)
-    df = df[df["Candidate"] == candidate].sort_values('Date', ascending=True)
 
-    df['Rolling'] = df.groupby(['Candidate'])['Percentage'].transform(
-        lambda x: x.rolling(5).mean())
+    if type(candidate) == str:
+        df = df[df["Candidate"] == candidate].sort_values("Date", ascending=True)
+    else:
+        df = df[df["Candidate"].isin(candidate)].sort_values("Date", ascending=True)
+
+    df["Rolling"] = df.groupby(["Candidate"])["Percentage"].transform(
+        lambda x: x.rolling(5).mean()
+    )
 
     df = df[df["Date"] >= (pd.to_datetime(start_date))]
 
-
-
-
-    # fig = px.line(
-    #     df,
-    #     x="Date",
-    #     y="Percentage",
-    #     color="Candidate",
-    #     title="Standing",
-    #     color_discrete_map=color_mapping_dict
-    # )
-
-    # df['Rolling'] = df.Percentage.rolling(5).mean()
-
-    # fig.update_layout(legend_title="")
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=df['Date'], y=df['Percentage'],mode='markers',name='Historical',marker=dict(color=color_mapping_dict[candidate])))
-    fig.add_trace(go.Line(x=df['Date'], y=df['Rolling'],name='Rolling Avg.',line=dict(color=color_mapping_dict[candidate], width=2)))
-    fig['layout']['yaxis'].update(autorange=True)
-    # fig.add_trace(go.Scatter(x=random_x, y=random_y1,
-    #                          mode='lines+markers',
-    #                          name='lines+markers'))
-    #
+    fig.add_trace(
+        go.Scatter(
+            x=df["Date"],
+            y=df["Percentage"],
+            mode="markers",
+            name="Historical",
+            marker=dict(color=color_mapping_dict[candidate]),
+        )
+    )
+    fig.add_trace(
+        go.Line(
+            x=df["Date"],
+            y=df["Rolling"],
+            name="Rolling Avg.",
+            line=dict(color=color_mapping_dict[candidate], width=2),
+        )
+    )
+    fig["layout"]["yaxis"].update(autorange=True)
+
+    fig.update_layout(title="Projected Votes (Actual vs Rolling)")
+    fig.update_xaxes(showgrid=False)
+    fig.update_yaxes(showgrid=False)
 
     return fig
 
 
-def national_favorability_trend(df, candidate, start_date):
-
+def party_favorability_trend(df, candidate, start_date):
     df["Date"] = pd.to_datetime(df["Date"], utc=False)
-    df = df.groupby(["Candidate", "Date"])["Favorable"].mean().round(2).reset_index()
+    favorable_df = df.copy()
+    unfavorable_df = df.copy()
 
-    df = df[df["Candidate"] == candidate].sort_values('Date', ascending=True)
+    favorable_df = (
+        favorable_df.groupby(["Candidate", "Date"])["Favorable"]
+        .mean()
+        .round(2)
+        .reset_index()
+    )
+    unfavorable_df = (
+        unfavorable_df.groupby(["Candidate", "Date"])["Unfavorable"]
+        .mean()
+        .round(2)
+        .reset_index()
+    )
 
-    df['Rolling'] = df.groupby(['Candidate'])['Favorable'].transform(
-        lambda x: x.rolling(5).mean())
+    favorable_df = favorable_df[favorable_df["Candidate"] == candidate].sort_values(
+        "Date", ascending=True
+    )
+    unfavorable_df = unfavorable_df[
+        unfavorable_df["Candidate"] == candidate
+    ].sort_values("Date", ascending=True)
 
-    df = df[df["Date"] >= (pd.to_datetime(start_date))]
+    favorable_df["Rolling Favorable"] = favorable_df.groupby(["Candidate"])[
+        "Favorable"
+    ].transform(lambda x: x.rolling(5).mean())
+    unfavorable_df["Rolling Unfavorable"] = unfavorable_df.groupby(["Candidate"])[
+        "Unfavorable"
+    ].transform(lambda x: x.rolling(5).mean())
+
+    favorable_df = favorable_df[favorable_df["Date"] >= (pd.to_datetime(start_date))]
+    unfavorable_df = unfavorable_df[
+        unfavorable_df["Date"] >= (pd.to_datetime(start_date))
+    ]
 
     fig = go.Figure()
-    fig.add_trace(go.Line(x=df['Date'], y=df['Favorable'],name='Historical',mode='markers',marker=dict(color=color_mapping_dict[candidate])))
-    fig.add_trace(go.Line(x=df['Date'], y=df['Rolling'],name='Rolling Avg.',line=dict(color=color_mapping_dict[candidate], width=2)))
+    fig.add_trace(
+        go.Line(
+            x=unfavorable_df["Date"],
+            y=unfavorable_df["Rolling Unfavorable"],
+            name="Unfavorable",
+            line=dict(color="red"),
+        )
+    )
+    fig.add_trace(
+        go.Line(
+            x=favorable_df["Date"],
+            y=favorable_df["Rolling Favorable"],
+            name="Favorable",
+            line=dict(color="blue"),
+        )
+    )
 
     fig.update_layout(legend_title="")
+    fig.update_layout(title="Favorability vs Unfavorability (Rolling)")
+    fig.update_xaxes(showgrid=False)
+    fig.update_yaxes(showgrid=False)
 
     return fig
 
 
-def national_favorability_stacked_bar(df):
+def party_favorability_stacked_bar(df):
     df["Date"] = pd.to_datetime(df["Date"], utc=False)
 
     df = df.loc[df.groupby(["Candidate"]).Date.idxmax()]
@@ -119,7 +164,7 @@ def national_favorability_stacked_bar(df):
             "Somewhat Unfavorable",
             "Very Unfavorable",
         ],
-        title="Historical",
+        title="Favorability (Entire Party)",
         orientation="h",
         text_auto=True,
         color_discrete_map={
@@ -135,8 +180,7 @@ def national_favorability_stacked_bar(df):
     return fig
 
 
-def national_standing_pie(df):
-
+def party_voting_pie(df):
     """
     This function creates a pie chart of the current standing of all republican candidates
 
@@ -149,139 +193,127 @@ def national_standing_pie(df):
     df = df.loc[df.groupby(["Candidate"]).Date.idxmax()]
 
     # Append a row for undecided voters
-    df.loc[-1] = ['Undecided', None,(100-df['Percentage'].sum()), None, None, 2024]
+    df.loc[-1] = ["Undecided", None, (100 - df["Percentage"].sum()), None, None, 2024]
 
     # go.Pie doesn't accept a dictionary -- colors must be in order of slices
-    df.sort_values('Percentage', ascending =False, inplace = True)
+    df.sort_values("Percentage", ascending=False, inplace=True)
     colors_list = []
     for index, row in df.iterrows():
-        candidate = row['Candidate']
+        candidate = row["Candidate"]
         color = color_mapping_dict[candidate]
         colors_list.append(color)
 
-    fig = go.Figure(go.Pie(
-        name="",
-        values=df['Percentage'],
-        labels=df['Candidate'],
+    fig = go.Figure(
+        go.Pie(
+            name="",
+            values=df["Percentage"],
+            labels=df["Candidate"],
+        )
+    )
 
-    ))
-
-    fig.update_traces(textinfo='percent+label',
-                      hovertemplate="Candidate:%{label}: <br>Percentage: %{value:.1f}% </br>",
-                      marker=dict(colors=colors_list),
-                      )
+    fig.update_traces(
+        textinfo="percent+label",
+        hovertemplate="Candidate:%{label}: <br>Percentage: %{value:.1f}% </br>",
+        marker=dict(colors=colors_list),
+    )
     fig.update_layout(showlegend=False)
+    fig.update_layout(title="Projected Votes (Entire Party)")
 
     return fig
 
 
-def favorability_kpi_card(df, candidate, start_date):
+def candidate_favorability_kpi_card(df, candidate, start_date):
     df["Date"] = pd.to_datetime(df["Date"], utc=False)
     df = df[df["Candidate"] == candidate]
 
-    # df = df.groupby(["Candidate","Date"])["Favorable"].mean().round(2).reset_index()
-
     current_result = df.loc[df.Date.idxmax()]
 
+    past_result = (
+        df[df["Date"] >= (pd.to_datetime(start_date))]
+        .sort_values("Date", ascending=False)
+        .iloc[-1]
+    )
 
-    past_result = df[
-        df["Date"] >= (pd.to_datetime(start_date))
-    ].sort_values('Date', ascending=False).iloc[-1]
-
-
-    fig = go.Figure(
+    fig = go.Figure()
+    fig.add_trace(
         go.Indicator(
             mode="number+delta",
             value=current_result["Favorable"],
-            delta={"position": "bottom", "reference": past_result["Favorable"]},
-            domain={"x": [0, 1], "y": [0, 1]},
-            title = {"text": "Current Favorability<br><span style='font-size:0.8em;color:gray'>Change Over Period</span><br>"}
+            delta={"position": "right", "reference": past_result["Favorable"]},
+            domain={"x": [0, 1], "y": [0.5, 1]},
+            title={"text": "Favorable"},
         )
+    )
+    fig.add_trace(
+        go.Indicator(
+            mode="number+delta",
+            value=current_result["Unfavorable"],
+            delta={"position": "right", "reference": past_result["Unfavorable"]},
+            domain={"x": [0, 1], "y": [0, 0.5]},
+            title={"text": "Unfavorable"},
         )
-
-
-    return fig
-
-def candidate_standing_vs_favorability(standing_df, favorability_df, candidate, start_date):
-
-    standing_df["Date"] = pd.to_datetime(standing_df["Date"], utc=False)
-    favorability_df["Date"] = pd.to_datetime(favorability_df["Date"], utc=False)
-
-    favorability_df = favorability_df.groupby(["Candidate", "Date"])["Favorable"].mean().round(2).reset_index()
-
-    standing_df = standing_df[standing_df["Candidate"] == candidate].sort_values('Date', ascending=True)
-    favorability_df = favorability_df[favorability_df["Candidate"] == candidate].sort_values('Date', ascending=True)
-
-    standing_df['Rolling'] = standing_df.groupby(['Candidate'])['Percentage'].transform(
-        lambda x: x.rolling(7).mean())
-
-    favorability_df['Rolling'] = favorability_df.groupby(['Candidate'])['Favorable'].transform(
-        lambda x: x.rolling(7).mean())
-
-    standing_df = standing_df[standing_df["Date"] >= (pd.to_datetime(start_date))]
-    favorability_df = favorability_df[favorability_df["Date"] >= (pd.to_datetime(start_date))]
-
-
-    fig = go.Figure()
-    fig.add_trace(go.Line(x=standing_df['Date'], y=standing_df['Rolling'],name='Rolling Vote',line=dict(color="red", width=2)))
-    fig.add_trace(go.Scatter(x=standing_df['Date'], y=standing_df['Percentage'],name='Historical Vote',mode='markers',marker=dict(color="red")))
-    fig.add_trace(go.Line(x=favorability_df['Date'], y=favorability_df['Rolling'],name='Rolling Favorability',line=dict(color="blue", width=2)))
-    fig.add_trace(go.Scatter(x=favorability_df['Date'], y=favorability_df['Favorable'],name='Historical Favorability',mode='markers',marker=dict(color="blue")))
-
-    fig.update_xaxes(showgrid=False)
-    fig.update_yaxes(showgrid=False)
-    fig.update_layout(title='Vote vs Favorability (7 Day Rolling)')
-
+    )
 
     return fig
 
 
-def standing_kpi_card(df, candidate, start_date):
+def candidate_voting_kpi_card(df, candidate, start_date):
     df["Date"] = pd.to_datetime(df["Date"], utc=False)
 
     current_result = df.copy()
-    current_result = current_result[current_result['Date'] == current_result.Date.max()]
-    current_result['Rank'] = current_result.sort_values(['Percentage'], ascending=False).groupby(['Candidate'], sort=False).ngroup() + 1
+    current_result = current_result[current_result["Date"] == current_result.Date.max()]
+    current_result["Rank"] = (
+        current_result.sort_values(["Percentage"], ascending=False)
+        .groupby(["Candidate"], sort=False)
+        .ngroup()
+        + 1
+    )
     current_result = current_result[current_result["Candidate"] == candidate]
     current_result = current_result.loc[current_result.Date.idxmax()]
-    print("Current Result",current_result)
 
     past_result = df.copy()
     past_result = past_result[
         past_result["Date"] >= (pd.to_datetime(start_date))
-    ].sort_values('Date', ascending=False)
+    ].sort_values("Date", ascending=False)
 
-    past_result = past_result[past_result['Date'] == past_result.Date.min()]
-    past_result['Rank'] = past_result.sort_values(['Percentage'], ascending=False).groupby(['Candidate'], sort=False).ngroup() + 1
+    past_result = past_result[past_result["Date"] == past_result.Date.min()]
+    past_result["Rank"] = (
+        past_result.sort_values(["Percentage"], ascending=False)
+        .groupby(["Candidate"], sort=False)
+        .ngroup()
+        + 1
+    )
     past_result = past_result[past_result["Candidate"] == candidate]
 
-    print("Past Result:",past_result)
     past_rank = 0
     past_pct = 0
-    if (not past_result.empty):
-        past_rank = past_result['Rank'].values[0]
+    if not past_result.empty:
+        past_rank = past_result["Rank"].values[0]
         past_pct = past_result["Percentage"].values[0]
-        print("true")
 
     fig = go.Figure()
-    fig.add_trace(go.Indicator(
-        mode="number+delta",
-        value=int(current_result['Rank']),
-        domain={'x': [0, 1], 'y': [0.5, 1]},
-        delta={'reference': past_rank ,  'position': "right"},
-        title = {"text": "Position"}
-    ))
+    fig.add_trace(
+        go.Indicator(
+            mode="number+delta",
+            value=int(current_result["Rank"]),
+            domain={"x": [0, 1], "y": [0.5, 1]},
+            delta={"reference": past_rank, "position": "right"},
+            title={"text": "Position"},
+        )
+    )
 
-    fig.add_trace(go.Indicator(
+    fig.add_trace(
+        go.Indicator(
             mode="number+delta",
             value=current_result["Percentage"],
             delta={"position": "right", "reference": past_pct},
             domain={"x": [0, 1], "y": [0, 0.5]},
-            title = {"text": "Vote"}
+            title={"text": "Vote"},
         )
-        )
+    )
 
     return fig
+
 
 def power_bar(df):
     fig = px.bar(
