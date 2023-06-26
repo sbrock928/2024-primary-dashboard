@@ -170,6 +170,7 @@ def national_standing_pie(df):
                       hovertemplate="Candidate:%{label}: <br>Percentage: %{value:.1f}% </br>",
                       marker=dict(colors=colors_list),
                       )
+    fig.update_layout(showlegend=False)
 
     return fig
 

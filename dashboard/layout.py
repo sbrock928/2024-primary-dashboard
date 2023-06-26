@@ -167,7 +167,7 @@ rep_primary_layout = dcc.Loading(
                                                                                                     "displayModeBar": False
                                                                                                 },
                                                                                             ),
-                                                                                        ), width = 5
+                                                                                        ), sm = 12, xl = 5
                                                                                     ),
                                                                                     dbc.Col(
                                                                                         dcc.Loading(
@@ -177,7 +177,7 @@ rep_primary_layout = dcc.Loading(
                                                                                                     "displayModeBar": False
                                                                                                 },
                                                                                             ),
-                                                                                        ), width = 7
+                                                                                        ), sm= 12, xl = 7
                                                                                     ),
                                                                                 ]
                                                                             )
