@@ -555,27 +555,53 @@ rep_primary_layout = dcc.Loading(
                                                     dbc.Row(
                                                         [
                                                             dbc.Col(
-                                                                dbc.Card(
-                                                                    html.Div(
-                                                                        id="trump-win-pct"
+                                                                [
+                                                                    dbc.Card(
+                                                                        [
+                                                                            html.Div(
+                                                                                html.H4(
+                                                                                    "Trump Estimated Winning Percent",
+                                                                                    style={
+                                                                                        "text-align": "center"
+                                                                                    },
+                                                                                )
+                                                                            ),
+                                                                            html.Div(
+                                                                                html.H5(
+                                                                                    id="trump-win-pct",
+                                                                                    style={
+                                                                                        "text-align": "center"
+                                                                                    },
+                                                                                )
+                                                                            ),
+                                                                        ],
+                                                                        style={
+                                                                            "height": "100%"
+                                                                        },
                                                                     )
-                                                                )
+                                                                ],
+                                                                sm=12,
+                                                                xxl=3,
                                                             ),
                                                             dbc.Col(
-                                                                dbc.Card(
-                                                                    dcc.Loading(
-                                                                        id="loading2",
-                                                                        children=[
-                                                                            dcc.Graph(
-                                                                                id="power-bar",
-                                                                                config={
-                                                                                    "displayModeBar": False
-                                                                                },
-                                                                            )
-                                                                        ],
-                                                                        type="circle",
-                                                                    ),
-                                                                )
+                                                                [
+                                                                    dbc.Card(
+                                                                        dcc.Loading(
+                                                                            id="loading2",
+                                                                            children=[
+                                                                                dcc.Graph(
+                                                                                    id="power-bar",
+                                                                                    config={
+                                                                                        "displayModeBar": False
+                                                                                    },
+                                                                                )
+                                                                            ],
+                                                                            type="circle",
+                                                                        ),
+                                                                    )
+                                                                ],
+                                                                sm=12,
+                                                                xxl=9,
                                                             ),
                                                         ]
                                                     ),
