@@ -388,12 +388,13 @@ def states_ranking_df(df):
 
     df.sort_values(["Code", "Percentage"], ascending=[True, True], inplace=True)
     df["shift"] = df.groupby("Code")["Percentage"].shift()
-    df["diff"] = df.groupby(["Code"])["Percentage"].transform(lambda x: x.diff())
+    df["Diff"] = df.groupby(["Code"])["Percentage"].transform(lambda x: x.diff())
 
     df.sort_values(
-        ["Code", "Percentage", "diff"], ascending=[True, False, True], inplace=True
+        ["Code", "Percentage", "Diff"], ascending=[True, False, True], inplace=True
     )
-    df = df[["Code", "Candidate", "Percentage", "diff"]]
+    df = df[["Code", "Candidate", "Percentage", "Diff"]]
+    df["Scenario"] = None
 
     df = df.groupby("Code").first()
 
@@ -413,16 +414,19 @@ def power_bar(df):
     return fig
 
 
-def monte_carlo(n_trials):
+def monte_carlo(n_trials, hypo_dict):
     states_ordered_dict = copy(states)
 
     for state in states_ordered_dict:
         states_ordered_dict[state]["Winning Coalition Count"] = 0
 
+    trumpWins = 0
+    oppositionWins = 0
+
     # Number of Simulations
     trial_count = n_trials
     for trials in range(0, trial_count):
-        redSum = 0
+        trumpSum = 0
         blueSum = 0
 
         for state in states_ordered_dict:
@@ -431,20 +435,32 @@ def monte_carlo(n_trials):
         # Iterate over each state in order by when they vote
         for state in states_ordered_dict:
             # 1237 delegates means we have a nominee
-            if redSum < 1234 and blueSum < 1234:
+            if trumpSum < 1234 and blueSum < 1234:
                 randomNum = randint(0, 1)
-                if randomNum == 0:
-                    redSum += states_ordered_dict[state]["Delegates"]
+                scenario = hypo_dict[state]
+
+                if scenario == "Trump":
+                    trumpSum += states_ordered_dict[state]["Delegates"]
+                    states_ordered_dict[state]["Win Tally"] = 1
+                elif scenario == "Opposition":
+                    blueSum += states_ordered_dict[state]["Delegates"]
+                elif randomNum == 0:
+                    trumpSum += states_ordered_dict[state]["Delegates"]
                     states_ordered_dict[state]["Win Tally"] = 1
                 else:
                     blueSum += states_ordered_dict[state]["Delegates"]
             else:
                 break
 
-        if redSum >= 1234:
+        if trumpSum >= 1234:
             for state in states_ordered_dict:
                 if states_ordered_dict[state]["Win Tally"] == 1:
                     states_ordered_dict[state]["Winning Coalition Count"] += 1
+            trumpWins += 1
+        elif blueSum >= 1234:
+            oppositionWins += 1
+
+    trump_win_pct = (trumpWins / trial_count) * 100
 
     df = pd.DataFrame.from_dict(states, orient="index").sort_values(
         ["Winning Coalition Count"], ascending=False
@@ -453,4 +469,4 @@ def monte_carlo(n_trials):
     df.reset_index(inplace=True)
     df.rename(columns={"index": "State"}, inplace=True)
 
-    return df
+    return df, trump_win_pct
