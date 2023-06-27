@@ -59,6 +59,9 @@ def render_page_content(pathname):
     [State("sidebar", "className")],
 )
 def toggle_classname(n, classname):
+    """
+    This callback supports the show/hide of the sidebar
+    """
     if n and classname == "":
         return "collapsed"
     return ""
@@ -70,6 +73,9 @@ def toggle_classname(n, classname):
     [State("collapse", "is_open")],
 )
 def toggle_collapse(n, is_open):
+    """
+    This callback supports the show/hide of the sidebar
+    """
     if n:
         return not is_open
     return is_open

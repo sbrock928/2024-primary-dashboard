@@ -265,7 +265,7 @@ def candidate_favorability_kpi_card(df, candidate, start_date):
             value=current_result["Favorable"],
             delta={"position": "right", "reference": past_result["Favorable"]},
             domain={"x": [0, 1], "y": [0.5, 1]},
-            title={"text": "Favorable"},
+            title={"text": "Favorable %"},
         )
     )
     fig.add_trace(
@@ -274,7 +274,7 @@ def candidate_favorability_kpi_card(df, candidate, start_date):
             value=current_result["Unfavorable"],
             delta={"position": "right", "reference": past_result["Unfavorable"]},
             domain={"x": [0, 1], "y": [0, 0.5]},
-            title={"text": "Unfavorable"},
+            title={"text": "Unfavorable %"},
         )
     )
 
@@ -328,7 +328,7 @@ def candidate_voting_kpi_card(df, candidate, start_date):
             mode="number+delta",
             value=int(current_result["Rank"]),
             domain={"x": [0, 1], "y": [0.5, 1]},
-            delta={"reference": past_rank, "position": "right", "valueformat": ".1f%"},
+            delta={"reference": past_rank, "position": "right"},
             title={"text": "Position"},
         )
     )
@@ -337,9 +337,10 @@ def candidate_voting_kpi_card(df, candidate, start_date):
         go.Indicator(
             mode="number+delta",
             value=current_result["Percentage"],
-            delta={"position": "right", "reference": past_pct},
+            delta={"position": "right", "reference": past_pct, "valueformat": ".2f"},
             domain={"x": [0, 1], "y": [0, 0.5]},
-            title={"text": "Vote"},
+            title={"text": "Vote %"},
+            number={"valueformat": ".2f"},
         )
     )
 
