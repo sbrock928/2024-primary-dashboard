@@ -1,4 +1,4 @@
-import dash
+
 from dash import (
     dcc,
     html,
@@ -7,13 +7,10 @@ from dash import (
     callback,
     dash_table,
     callback_context,
-    no_update,
-    State,
+    no_update
 )
 import dash_bootstrap_components as dbc
-from dashboard.query import queryData
-import plotly.express as px
-import plotly.graph_objects as go
+
 import pandas as pd
 import datetime
 
@@ -466,10 +463,10 @@ def update_current_standing_figures(
         national_favorability_df, candidate, start_date
     )
 
-    national_favorability_trend = func.party_favorability_trend(
+    candidate_favorability_trend = func.candidate_favorability_trend(
         national_favorability_df, candidate, start_date
     )
-    national_favorability_bar = func.party_favorability_stacked_bar(
+    party_favorability_bar = func.party_favorability_stacked_bar(
         national_favorability_df
     )
 
@@ -480,8 +477,8 @@ def update_current_standing_figures(
         party_voting_pie,
         candidate_voting_trend,
         candidate_favorability_kpi_card,
-        national_favorability_trend,
-        national_favorability_bar,
+        candidate_favorability_trend,
+        party_favorability_bar,
         state_standing_map,
     )
 

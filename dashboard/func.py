@@ -3,7 +3,7 @@ from collections import OrderedDict
 from random import randint
 import pandas as pd
 import plotly.graph_objects as go
-import datetime
+
 
 color_mapping_dict = dict(
     Trump="red",
@@ -20,6 +20,13 @@ color_mapping_dict = dict(
 
 
 def state_standing_map(df):
+
+    """
+    This function calculates the current leader of each state
+    :param df: Dataframe consisting of state polling data
+    :return: Choropleth graph of current state poll leader
+    """
+
     df["Date"] = pd.to_datetime(df["Date"], utc=False)
 
     df = df.loc[df.groupby(["Code", "Candidate"]).Date.idxmax()].sort_values(
@@ -47,6 +54,14 @@ def state_standing_map(df):
 
 
 def candidate_voting_trend(df, candidate, start_date):
+
+    """
+    This function creates a historical line graph of candidate vote pct.
+    :param df: A dataframe consisting of national average poll data
+    :param candidate: A list of candidates
+    :param start_date: A date
+    :return: A line graph
+    """
     df["Date"] = pd.to_datetime(df["Date"], utc=False)
 
     if type(candidate) == str:
@@ -87,7 +102,8 @@ def candidate_voting_trend(df, candidate, start_date):
     return fig
 
 
-def party_favorability_trend(df, candidate, start_date):
+def candidate_favorability_trend(df, candidate, start_date):
+    """"""
     df["Date"] = pd.to_datetime(df["Date"], utc=False)
     favorable_df = df.copy()
     unfavorable_df = df.copy()
