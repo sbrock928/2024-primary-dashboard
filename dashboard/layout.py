@@ -560,7 +560,7 @@ rep_primary_layout = dcc.Loading(
                                                                         [
                                                                             html.Div(
                                                                                 html.H4(
-                                                                                    "Trump Estimated Winning Percent",
+                                                                                    "Trump Est. Winning Pct.",
                                                                                     style={
                                                                                         "text-align": "center"
                                                                                     },
