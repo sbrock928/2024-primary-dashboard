@@ -405,6 +405,9 @@ rep_primary_layout = dcc.Loading(
     Input("interval-component", "n_intervals"),
 )
 def update(n):
+    """
+    This function populates data stores and components
+    """
     national_avg_poll_df, national_favorability_df, state_polls_df = query.queryData()
 
     start_date = datetime.date.today() - datetime.timedelta(days=30)
@@ -446,6 +449,15 @@ def update_current_standing_figures(
     candidate,
     start_date,
 ):
+    """
+    This function generates all visualizations
+    :param national_avg_data:
+    :param national_favorability_data:
+    :param state_poll_data:
+    :param candidate:
+    :param start_date:
+    :return:
+    """
     national_avg_poll_df = pd.DataFrame(national_avg_data)
     national_favorability_df = pd.DataFrame(national_favorability_data)
     state_poll_df = pd.DataFrame(state_poll_data)

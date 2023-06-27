@@ -103,7 +103,13 @@ def candidate_voting_trend(df, candidate, start_date):
 
 
 def candidate_favorability_trend(df, candidate, start_date):
-    """"""
+    """
+     This function creates a historical line graph of candidate favorability vs unfavorability.
+    :param df: A dataframe of favorability polls
+    :param candidate: A string representing a candidate
+    :param start_date: A date
+    :return: A line graph
+    """
     df["Date"] = pd.to_datetime(df["Date"], utc=False)
     favorable_df = df.copy()
     unfavorable_df = df.copy()
@@ -167,6 +173,11 @@ def candidate_favorability_trend(df, candidate, start_date):
 
 
 def party_favorability_stacked_bar(df):
+    """
+
+    :param df: A dataframe of favorability polls
+    :return: A bar chart of all candidate's favorability
+    """
     df["Date"] = pd.to_datetime(df["Date"], utc=False)
 
     df = df.loc[df.groupby(["Candidate"]).Date.idxmax()]
@@ -239,6 +250,13 @@ def party_voting_pie(df):
 
 
 def candidate_favorability_kpi_card(df, candidate, start_date):
+    """
+
+    :param df: A dataframe of favorability polls
+    :param candidate: A string representing a candidate
+    :param start_date: A date
+    :return: a KPI card for candidate favorability
+    """
     df["Date"] = pd.to_datetime(df["Date"], utc=False)
     df = df[df["Candidate"] == candidate]
 
@@ -274,6 +292,13 @@ def candidate_favorability_kpi_card(df, candidate, start_date):
 
 
 def candidate_voting_kpi_card(df, candidate, start_date):
+    """
+
+    :param df: A dataframe of national polling info
+    :param candidate: A string representing a candidate
+    :param start_date: A date
+    :return: A kpi card representing a candidate's projected votes
+    """
     df["Date"] = pd.to_datetime(df["Date"], utc=False)
 
     current_result = df.copy()
