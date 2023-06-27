@@ -787,6 +787,6 @@ def update_sim(n_trials, run_sim, df):
         df, trump_win_pct = func.monte_carlo(int(n_trials), hypo_dict["Scenario"])
         power_bar = func.power_bar(df)
 
-        return df.to_dict("records"), 0, power_bar, {"display": "block"}, trump_win_pct
+        return df.to_dict("records"), 0, power_bar, {"display": "block"}, format(trump_win_pct/100,'.2%')
     else:
         return no_update, no_update, no_update, no_update, no_update
