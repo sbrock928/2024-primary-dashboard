@@ -559,20 +559,29 @@ rep_primary_layout = dcc.Loading(
                                                                     dbc.Card(
                                                                         [
                                                                             html.Div(
-                                                                                html.H4(
-                                                                                    "Trump Est. Winning Pct.",
-                                                                                    style={
-                                                                                        "text-align": "center"
-                                                                                    },
-                                                                                )
-                                                                            ),
-                                                                            html.Div(
-                                                                                html.H5(
-                                                                                    id="trump-win-pct",
-                                                                                    style={
-                                                                                        "text-align": "center"
-                                                                                    },
-                                                                                )
+                                                                                [
+                                                                                    html.H4(
+                                                                                        "Trump Est. Winning Pct.",
+                                                                                        style={
+                                                                                            "text-align": "center",
+                                                                                            "vertical-align": "middle",
+                                                                                        },
+                                                                                    ),
+                                                                                    html.H5(
+                                                                                        id="trump-win-pct",
+                                                                                        style={
+                                                                                            "text-align": "center",
+                                                                                            "vertical-align": "middle",
+                                                                                        },
+                                                                                    ),
+                                                                                ],
+                                                                                style={
+                                                                                    "text-align": "center",
+                                                                                    "position": "absolute",
+                                                                                    "top": "50%",
+                                                                                    "left": 0,
+                                                                                    "right": 0,
+                                                                                },
                                                                             ),
                                                                         ],
                                                                         style={
