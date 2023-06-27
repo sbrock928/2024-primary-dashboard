@@ -1,4 +1,3 @@
-
 from dash import (
     dcc,
     html,
@@ -7,7 +6,7 @@ from dash import (
     callback,
     dash_table,
     callback_context,
-    no_update
+    no_update,
 )
 import dash_bootstrap_components as dbc
 
@@ -15,6 +14,7 @@ import pandas as pd
 import datetime
 
 from dashboard import query, func
+from dashboard.constants import states
 
 date_picker = (
     dcc.DatePickerSingle(
@@ -126,6 +126,14 @@ candidate_dropdown = dcc.Dropdown(
     multi=False,
 )
 
+
+state_dropdown = dcc.Dropdown(
+    id="state-select",
+    value="IA",
+    options=[{"label": i, "value": i} for i in states],
+    clearable=False,
+)
+
 rep_primary_layout = dcc.Loading(
     html.Div(
         [
@@ -139,15 +147,17 @@ rep_primary_layout = dcc.Loading(
                 [
                     dbc.Tab(
                         [
-                            dbc.Row([
-                                dbc.Col(html.P("Candidate:"),sm=1, xxl=1),
-                                dbc.Col(candidate_dropdown, sm = 11, xxl = 3),
-
-                            ],style={"padding-top": "10px"},),
                             dbc.Row(
                                 [
-                                dbc.Col(html.P("Start Date:"), sm=1, xxl=1),
-                                dbc.Col(date_picker, sm = 11, xxl = 3),
+                                    dbc.Col(html.P("Candidate:"), sm=1, xxl=1),
+                                    dbc.Col(candidate_dropdown, sm=11, xxl=3),
+                                ],
+                                style={"padding-top": "10px"},
+                            ),
+                            dbc.Row(
+                                [
+                                    dbc.Col(html.P("Start Date:"), sm=1, xxl=1),
+                                    dbc.Col(date_picker, sm=11, xxl=3),
                                 ],
                                 style={"padding-top": "10px"},
                             ),
@@ -289,15 +299,58 @@ rep_primary_layout = dcc.Loading(
                                                             ),
                                                             dbc.CardBody(
                                                                 [
-                                                                    dbc.Card(
-                                                                        dcc.Loading(
-                                                                            dcc.Graph(
-                                                                                id="state-choropleth",
-                                                                                config={
-                                                                                    "displayModeBar": False
-                                                                                },
+                                                                    dbc.Row(
+                                                                        [
+                                                                            dbc.Col(
+                                                                                html.P(
+                                                                                    "State:"
+                                                                                ),
+                                                                                sm=1,
+                                                                                xxl=1,
                                                                             ),
-                                                                        )
+                                                                            dbc.Col(
+                                                                                state_dropdown,
+                                                                                sm=11,
+                                                                                xxl=3,
+                                                                            ),
+                                                                        ],
+                                                                        style={
+                                                                            "padding-top": "10px"
+                                                                        },
+                                                                    ),
+                                                                    dbc.Row(
+                                                                        [
+                                                                            dbc.Col(
+                                                                                [
+                                                                                    dbc.Card(
+                                                                                        dcc.Loading(
+                                                                                            state_table
+                                                                                        )
+                                                                                    )
+                                                                                ],
+                                                                                sm=12,
+                                                                                xxl=4,
+                                                                            ),
+                                                                            dbc.Col(
+                                                                                [
+                                                                                    dbc.Card(
+                                                                                        dcc.Loading(
+                                                                                            dcc.Graph(
+                                                                                                id="state-choropleth",
+                                                                                                config={
+                                                                                                    "displayModeBar": False
+                                                                                                },
+                                                                                            ),
+                                                                                        )
+                                                                                    )
+                                                                                ],
+                                                                                sm=12,
+                                                                                xxl=8,
+                                                                            ),
+                                                                        ],
+                                                                        style={
+                                                                            "padding-top": "10px"
+                                                                        },
                                                                     ),
                                                                 ]
                                                             ),
@@ -316,7 +369,48 @@ rep_primary_layout = dcc.Loading(
                                 style={"padding-top": "10px", "padding-bottom": "10px"},
                             ),
                         ],
-                        label="Latest Polls",
+                        label="National Polling",
+                    ),
+                    dbc.Tab(
+                        [
+                            # dbc.Row(
+                            #     [
+                            #     dbc.Col(html.P("State:"), sm=1, xxl=1),
+                            #     dbc.Col(state_dropdown, sm=11, xxl=3),
+                            #     ], style={"padding-top": "10px"},
+                            # ),
+                            dbc.Row(
+                                [
+                                    dbc.Col(
+                                        [
+                                            dbc.Card(
+                                                [
+                                                    dbc.CardHeader(
+                                                        "Candidate Position"
+                                                    ),
+                                                    dbc.CardBody(
+                                                        [
+                                                            # dbc.Row(
+                                                            #         dbc.Col(
+                                                            #             [
+                                                            #                 dbc.Card(
+                                                            #                     dcc.Loading(state_table),
+                                                            #                     )
+                                                            #             ], sm=12,  xl=12,
+                                                            #         )
+                                                            # )
+                                                        ]
+                                                    ),
+                                                ]
+                                            )
+                                        ],
+                                        width=12,
+                                    )
+                                ],
+                                style={"padding-top": "10px", "padding-bottom": "10px"},
+                            ),
+                        ],
+                        label="State Polling",
                     ),
                     dbc.Tab(
                         [
@@ -434,6 +528,8 @@ def update(n):
         Output("candidate-favorability-trend", "figure"),
         Output("party-favorability-bar", "figure"),
         Output("state-choropleth", "figure"),
+        Output("state-table", "data"),
+        Output("state-table", "page_current"),
     ],
     [
         Input("national-average-store", "data"),
@@ -441,6 +537,7 @@ def update(n):
         Input("state-polls-store", "data"),
         Input("candidate-select", "value"),
         Input("date-range", "date"),
+        Input("state-select", "value"),
     ],
 )
 def update_current_standing_figures(
@@ -449,6 +546,7 @@ def update_current_standing_figures(
     state_poll_data,
     candidate,
     start_date,
+    state,
 ):
     """
     This function generates all visualizations
@@ -483,6 +581,8 @@ def update_current_standing_figures(
         national_favorability_df
     )
 
+    state_standing_df = func.state_ranking_df(state_poll_df, state)
+
     state_standing_map = func.state_standing_map(state_poll_df)
 
     return (
@@ -493,6 +593,8 @@ def update_current_standing_figures(
         candidate_favorability_trend,
         party_favorability_bar,
         state_standing_map,
+        state_standing_df.to_dict("records"),
+        0,
     )
 
 
