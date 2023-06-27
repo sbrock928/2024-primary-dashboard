@@ -17,7 +17,7 @@ import datetime
 from dashboard import query, func
 
 date_picker = (
-    dcc.DatePickerRange(
+    dcc.DatePickerSingle(
         id="date-range",
         min_date_allowed=datetime.date(2023, 3, 1),
     ),
@@ -139,12 +139,16 @@ rep_primary_layout = dcc.Loading(
                 [
                     dbc.Tab(
                         [
+                            dbc.Row([
+                                dbc.Col(html.P("Candidate:"),sm=1, xxl=1),
+                                dbc.Col(candidate_dropdown, sm = 11, xxl = 3),
+
+                            ],style={"padding-top": "10px"},),
                             dbc.Row(
-                                dbc.Col(candidate_dropdown, sm = 12, xxl = 3),
-                                style={"padding-top": "10px"},
-                            ),
-                            dbc.Row(
-                                dbc.Col(date_picker, sm = 12, xxl = 3),
+                                [
+                                dbc.Col(html.P("Start Date:"), sm=1, xxl=1),
+                                dbc.Col(date_picker, sm = 11, xxl = 3),
+                                ],
                                 style={"padding-top": "10px"},
                             ),
                             dbc.Row(
@@ -398,8 +402,7 @@ rep_primary_layout = dcc.Loading(
         Output("national-average-store", "data"),
         Output("national-favorability-store", "data"),
         Output("state-polls-store", "data"),
-        Output("date-range", "start_date"),
-        Output("date-range", "end_date"),
+        Output("date-range", "date"),
         Output("date-range", "max_date_allowed"),
     ],
     Input("interval-component", "n_intervals"),
@@ -410,16 +413,14 @@ def update(n):
     """
     national_avg_poll_df, national_favorability_df, state_polls_df = query.queryData()
 
-    start_date = datetime.date.today() - datetime.timedelta(days=30)
-    end_date = datetime.date.today()
+    date = datetime.date.today() - datetime.timedelta(days=30)
     max_date_allowed = datetime.date.today()
 
     return (
         national_avg_poll_df.to_dict("records"),
         national_favorability_df.to_dict("records"),
         state_polls_df.to_dict("records"),
-        start_date,
-        end_date,
+        date,
         max_date_allowed,
     )
 
@@ -439,7 +440,7 @@ def update(n):
         Input("national-favorability-store", "data"),
         Input("state-polls-store", "data"),
         Input("candidate-select", "value"),
-        Input("date-range", "start_date"),
+        Input("date-range", "date"),
     ],
 )
 def update_current_standing_figures(
