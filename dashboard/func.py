@@ -166,7 +166,7 @@ def candidate_favorability_trend(df, candidate, start_date):
 
 def party_favorability_stacked_bar(df):
     """
-
+    This function creates a stacked bar of favorable vs unfavorable for the entire candidate field
     :param df: A dataframe of favorability polls
     :return: A bar chart of all candidate's favorability
     """
@@ -240,7 +240,7 @@ def party_voting_pie(df):
 
 def candidate_favorability_kpi_card(df, candidate, start_date):
     """
-
+    This function creates the KPI card of candidate favorability data
     :param df: A dataframe of favorability polls
     :param candidate: A string representing a candidate
     :param start_date: A date
@@ -283,7 +283,7 @@ def candidate_favorability_kpi_card(df, candidate, start_date):
 
 def candidate_voting_kpi_card(df, candidate, start_date):
     """
-
+    This function creates the KPI card containing current standing and vote pct.
     :param df: A dataframe of national polling info
     :param candidate: A string representing a candidate
     :param start_date: A date

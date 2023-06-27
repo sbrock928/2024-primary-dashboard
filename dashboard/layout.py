@@ -444,7 +444,7 @@ rep_primary_layout = dcc.Loading(
                                                                         [
                                                                             dcc.Markdown(
                                                                                 """
-                                                                                This simulation allows simulation of Trump's winning chances based on different hypothetical scenarios of states won.\
+                                                                                This is a simulation of Trump's winning chances based on different hypothetical scenarios of states won.\
                                                                                 Users can select different states to assign to Trump, the Opposition candidate, or random chance between the two.
                                                                                 
                                                                                 1. Select number of trials to be run (Dropdown Below)
