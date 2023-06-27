@@ -140,11 +140,11 @@ rep_primary_layout = dcc.Loading(
                     dbc.Tab(
                         [
                             dbc.Row(
-                                dbc.Col(candidate_dropdown, sm = 12, xxl = 4),
+                                dbc.Col(candidate_dropdown, sm = 12, xxl = 3),
                                 style={"padding-top": "10px"},
                             ),
                             dbc.Row(
-                                dbc.Col(date_picker, sm = 12, xxl = 4),
+                                dbc.Col(date_picker, sm = 12, xxl = 3),
                                 style={"padding-top": "10px"},
                             ),
                             dbc.Row(

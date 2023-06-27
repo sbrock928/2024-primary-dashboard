@@ -179,26 +179,25 @@ def party_favorability_stacked_bar(df):
     :return: A bar chart of all candidate's favorability
     """
     df["Date"] = pd.to_datetime(df["Date"], utc=False)
+    df.sort_values('Date', inplace = True, ascending = True)
 
     df = df.loc[df.groupby(["Candidate"]).Date.idxmax()]
+
+    print(df)
 
     fig = px.bar(
         df,
         y="Candidate",
         x=[
-            "Very Favorable",
-            "Somewhat Favorable",
-            "Somewhat Unfavorable",
-            "Very Unfavorable",
+            "Favorable",
+            "Unfavorable",
         ],
         title="Favorability (Entire Party)",
         orientation="h",
         text_auto=True,
         color_discrete_map={
-            "Very Unfavorable": "red",
-            "Very Favorable": "green",
-            "Somewhat Unfavorable": "Orange",
-            "Somewhat Favorable": "yellow",
+            "Unfavorable": "red",
+            "Favorable": "blue",
         },
     )
 
@@ -258,6 +257,7 @@ def candidate_favorability_kpi_card(df, candidate, start_date):
     :return: a KPI card for candidate favorability
     """
     df["Date"] = pd.to_datetime(df["Date"], utc=False)
+
     df = df[df["Candidate"] == candidate]
 
     current_result = df.loc[df.Date.idxmax()]
@@ -338,7 +338,7 @@ def candidate_voting_kpi_card(df, candidate, start_date):
             mode="number+delta",
             value=int(current_result["Rank"]),
             domain={"x": [0, 1], "y": [0.5, 1]},
-            delta={"reference": past_rank, "position": "right"},
+            delta={"reference": past_rank, "position": "right","valueformat": ".1f%"},
             title={"text": "Position"},
         )
     )
