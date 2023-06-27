@@ -295,7 +295,7 @@ rep_primary_layout = dcc.Loading(
                                                     dbc.Card(
                                                         [
                                                             dbc.CardHeader(
-                                                                "Current State Leader"
+                                                                "State Polls"
                                                             ),
                                                             dbc.CardBody(
                                                                 [
@@ -369,48 +369,7 @@ rep_primary_layout = dcc.Loading(
                                 style={"padding-top": "10px", "padding-bottom": "10px"},
                             ),
                         ],
-                        label="National Polling",
-                    ),
-                    dbc.Tab(
-                        [
-                            # dbc.Row(
-                            #     [
-                            #     dbc.Col(html.P("State:"), sm=1, xxl=1),
-                            #     dbc.Col(state_dropdown, sm=11, xxl=3),
-                            #     ], style={"padding-top": "10px"},
-                            # ),
-                            dbc.Row(
-                                [
-                                    dbc.Col(
-                                        [
-                                            dbc.Card(
-                                                [
-                                                    dbc.CardHeader(
-                                                        "Candidate Position"
-                                                    ),
-                                                    dbc.CardBody(
-                                                        [
-                                                            # dbc.Row(
-                                                            #         dbc.Col(
-                                                            #             [
-                                                            #                 dbc.Card(
-                                                            #                     dcc.Loading(state_table),
-                                                            #                     )
-                                                            #             ], sm=12,  xl=12,
-                                                            #         )
-                                                            # )
-                                                        ]
-                                                    ),
-                                                ]
-                                            )
-                                        ],
-                                        width=12,
-                                    )
-                                ],
-                                style={"padding-top": "10px", "padding-bottom": "10px"},
-                            ),
-                        ],
-                        label="State Polling",
+                        label="Current Polling",
                     ),
                     dbc.Tab(
                         [
