@@ -11,10 +11,14 @@ from dash import (
 import dash_bootstrap_components as dbc
 
 import pandas as pd
+import plotly.graph_objects as go
+import plotly.express as px
 import datetime
 
 from dashboard import query, func
 from dashboard.constants import states
+
+from typing import Any, Dict, List, Tuple
 
 date_picker = (
     dcc.DatePickerSingle(
@@ -657,7 +661,15 @@ rep_primary_layout = dcc.Loading(
     ],
     Input("interval-component", "n_intervals"),
 )
-def update_data_stores(n):
+def update_data_stores(
+    n: int,
+) -> Tuple[
+    List[Dict[Any, Any]],
+    List[Dict[Any, Any]],
+    List[Dict[Any, Any]],
+    datetime.date,
+    datetime.date,
+]:
     """
     This callback populates the 3 data stores with polling data
 
@@ -672,7 +684,7 @@ def update_data_stores(n):
         date-range | max_date_allowed - datetime: Today's date
 
     """
-    national_avg_poll_df, national_favorability_df, state_polls_df = query.queryData()
+    national_avg_poll_df, national_favorability_df, state_polls_df = query.query_data()
 
     date = datetime.date.today() - datetime.timedelta(days=30)
     max_date_allowed = datetime.date.today()
@@ -710,13 +722,25 @@ def update_data_stores(n):
     ],
 )
 def update_current_polling_figures(
-    national_avg_data,
-    national_favorability_data,
-    state_poll_data,
-    candidate,
-    start_date,
-    state,
-):
+    national_avg_data: List[Dict[Any, Any]],
+    national_favorability_data: List[Dict[Any, Any]],
+    state_poll_data: List[Dict[Any, Any]],
+    candidate: str,
+    start_date: datetime.date,
+    state: str,
+) -> Tuple[
+    go.Figure,
+    go.Figure,
+    go.Figure,
+    go.Figure,
+    go.Figure,
+    px.bar,
+    px.choropleth,
+    List[Dict[Any, Any]],
+    int,
+    List[Dict[Any, Any]],
+    int,
+]:
     """
     This callback updates all visualizations on the 'Current Polling' tab
 
@@ -800,7 +824,9 @@ def update_current_polling_figures(
         Input("states-table", "data"),
     ],
 )
-def update_election_simulation_figures(n_trials, run_sim, df):
+def update_election_simulation_figures(
+    n_trials: int, run_sim: int, df: pd.DataFrame
+) -> Tuple[Any, int, px.bar, Dict[Any, Any], str]:
     """
     This callback updates all visualizations on the "Election Simulation" tab.
 
