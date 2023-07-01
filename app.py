@@ -37,6 +37,10 @@ app.layout = html.Div(
 
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def render_page_content(pathname):
+    """
+    This callback supports URL routing within the dash app
+    """
+
     if pathname == "/":
         return about_me_layout
     elif pathname == "/primary":

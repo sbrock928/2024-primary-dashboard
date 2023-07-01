@@ -1,19 +1,24 @@
-from copy import copy, deepcopy
+from copy import copy
 
 import plotly.express as px
-from collections import OrderedDict
 from random import randint
 import pandas as pd
 import plotly.graph_objects as go
 from dashboard.constants import color_mapping_dict, states, state_order_list
 
 
-def state_standing_map(df):
+def state_standing_map(state_poll_df):
     """
-    This function calculates the current leader of each state
-    :param df: Dataframe consisting of state polling data
-    :return: Choropleth graph of current state poll leader
+    This function creates a choropleth map displaying the current poll leader in each state
+
+    inputs:
+        state_poll_df - dataframe : A dataframe of state poll data
+
+    returns:
+        fig | figure: A choropleth map displaying the current poll leader in each state
+
     """
+    df = copy(state_poll_df)
 
     df["Date"] = pd.to_datetime(df["Date"], utc=False)
     df = df[df["notes"] != "head-to-head poll"]
@@ -46,14 +51,22 @@ def state_standing_map(df):
     return fig
 
 
-def candidate_voting_trend(df, candidate, start_date):
+def candidate_voting_trend(national_avg_poll_df, candidate, start_date):
     """
-    This function creates a historical line graph of candidate vote pct.
-    :param df: A dataframe consisting of national average poll data
-    :param candidate: A list of candidates
-    :param start_date: A date
-    :return: A line graph
+    This function creates a historical line graph of candidate vote pct and a 5 day rolling average.
+
+    inputs:
+        national_avg_poll_df - dataframe: A dataframe of the national average poll data
+        candidate - str: Candidate to filter by
+        start_date - datetime: Beginning date of data to plot
+
+    returns:
+        fig | figure: A historical line graph of candidate vote pct and a 5 day rolling average.
+
     """
+
+    df = copy(national_avg_poll_df)
+
     df["Date"] = pd.to_datetime(df["Date"], utc=False)
 
     if type(candidate) == str:
@@ -94,14 +107,21 @@ def candidate_voting_trend(df, candidate, start_date):
     return fig
 
 
-def candidate_favorability_trend(df, candidate, start_date):
+def candidate_favorability_trend(national_favorability_df, candidate, start_date):
     """
      This function creates a historical line graph of candidate favorability vs unfavorability.
-    :param df: A dataframe of favorability polls
-    :param candidate: A string representing a candidate
-    :param start_date: A date
-    :return: A line graph
+
+    inputs:
+        national_favorability_df - dataframe: A dataframe of the national favorability poll data
+        candidate - str: Candidate to filter by
+        start_date - datetime: Beginning date of data to plot
+
+    returns:
+        fig | figure: A historical line graph of candidate favorability vs unfavorability.
+
     """
+    df = copy(national_favorability_df)
+
     df["Date"] = pd.to_datetime(df["Date"], utc=False)
     favorable_df = df.copy()
     unfavorable_df = df.copy()
@@ -164,12 +184,21 @@ def candidate_favorability_trend(df, candidate, start_date):
     return fig
 
 
-def party_favorability_stacked_bar(df):
+def party_favorability_stacked_bar(national_favorability_df):
     """
     This function creates a stacked bar of favorable vs unfavorable for the entire candidate field
-    :param df: A dataframe of favorability polls
-    :return: A bar chart of all candidate's favorability
+
+    inputs:
+        national_favorability_df - dataframe: A dataframe of the national favorability poll data
+
+
+    returns:
+        fig | figure: A stacked bar of favorable vs unfavorable for the entire candidate field
+
     """
+
+    df = copy(national_favorability_df)
+
     df["Date"] = pd.to_datetime(df["Date"], utc=False)
     df.sort_values("Date", inplace=True, ascending=True)
 
@@ -196,14 +225,19 @@ def party_favorability_stacked_bar(df):
     return fig
 
 
-def party_voting_pie(df):
+def party_voting_pie(national_avg_poll_df):
     """
     This function creates a pie chart of the current standing of all republican candidates
 
-    :param df: Pandas dataframe containing historical national average standings for each candidate
-    :return: Pie chart of current standings
+    inputs:
+        national_avg_poll_df - dataframe: A dataframe of the national average poll data
+
+    returns:
+        fig - figure: A pie chart of current vote % for the entire field
 
     """
+
+    df = copy(national_avg_poll_df)
 
     df["Date"] = pd.to_datetime(df["Date"], utc=False)
     df = df.loc[df.groupby(["Candidate"]).Date.idxmax()]
@@ -238,14 +272,20 @@ def party_voting_pie(df):
     return fig
 
 
-def candidate_favorability_kpi_card(df, candidate, start_date):
+def candidate_favorability_kpi_card(national_favorability_df, candidate, start_date):
     """
     This function creates the KPI card of candidate favorability data
-    :param df: A dataframe of favorability polls
-    :param candidate: A string representing a candidate
-    :param start_date: A date
-    :return: a KPI card for candidate favorability
+
+    inputs:
+        national_favorability_df - dataframe: A dataframe of the national favorability poll data
+        candidate - str: Candidate to filter by
+        start_date - datetime: Beginning date of data to plot
+
+    returns:
+        fig - figure: A figure containing a KPI card of acandidate's favorability data
     """
+
+    df = copy(national_favorability_df)
     df["Date"] = pd.to_datetime(df["Date"], utc=False)
 
     df = df[df["Candidate"] == candidate]
@@ -281,14 +321,21 @@ def candidate_favorability_kpi_card(df, candidate, start_date):
     return fig
 
 
-def candidate_voting_kpi_card(df, candidate, start_date):
+def candidate_voting_kpi_card(national_avg_poll_df, candidate, start_date):
     """
-    This function creates the KPI card containing current standing and vote pct.
-    :param df: A dataframe of national polling info
-    :param candidate: A string representing a candidate
-    :param start_date: A date
-    :return: A kpi card representing a candidate's projected votes
+    This function creates the KPI card of a candidate's vote percent and position in the race
+
+    inputs:
+        national_avg_poll_df - dataframe: A dataframe of the national average poll data
+        candidate - str: Candidate to filter by
+        start_date - datetime: Beginning date of data to plot
+
+    returns:
+        fig - figure: A figure containing a KPI card of acandidate's vote and position data
     """
+
+    df = copy(national_avg_poll_df)
+
     df["Date"] = pd.to_datetime(df["Date"], utc=False)
 
     current_result = df.copy()
@@ -347,12 +394,19 @@ def candidate_voting_kpi_card(df, candidate, start_date):
     return fig
 
 
-def state_ranking_df(df, state):
+def state_ranking_df(state_poll_df, state):
     """
-    This function calculates the current leader of each state
-    :param df: Dataframe consisting of state polling data
-    :return: Choropleth graph of current state poll leader
+    This function creates a dataframe containing a state's current poll data
+
+    inputs:
+        state_poll_df - dataframe: A dataframe of state polling data
+        state - str: A state to filter by
+
+    returns:
+        df - dataframe: A dataframe containing a state's current poll data
     """
+
+    df = copy(state_poll_df)
 
     df["Date"] = pd.to_datetime(df["Date"], utc=False)
     df = df[df["notes"] != "head-to-head poll"]
@@ -374,12 +428,18 @@ def state_ranking_df(df, state):
     return df
 
 
-def states_ranking_df(df):
+def states_ranking_df(state_poll_df):
     """
     This function calculates the current leader of each state
-    :param df: Dataframe consisting of state polling data
-    :return: Choropleth graph of current state poll leader
+
+    inputs:
+        state_poll_df - dataframe: A dataframe of state polling data
+
+    returns:
+        df - dataframe: A dataframe containing the current leader of each state
     """
+
+    df = copy(state_poll_df)
 
     df["Date"] = pd.to_datetime(df["Date"], utc=False)
     df = df[df["notes"] != "head-to-head poll"]
@@ -405,7 +465,18 @@ def states_ranking_df(df):
     return new_df
 
 
-def power_bar(df):
+def power_bar(results_df):
+    """
+    This function creates a bar chart of each state's political power
+
+    inputs:
+        results_df - dataframe: A dataframe of simulation results
+
+    returns:
+        fig - figure: A bar chart of each state's political power
+    """
+
+    df = copy(results_df)
     fig = px.bar(
         df,
         y="Winning Coalition Count",
@@ -416,6 +487,18 @@ def power_bar(df):
 
 
 def monte_carlo(n_trials, hypo_dict):
+    """
+    This function performs a monte carlo simulation of political power
+
+    inputs:
+        n_trials - int: Number of trials to run in the simulation
+        hypo_dict - dic: A dictionary containing state hypo data.
+
+    returns:
+        df - dataframe: A dataframe of simulation results
+        trump_win_pct - float: A percentage of trials won
+    """
+
     states_ordered_dict = copy(states)
 
     for state in states_ordered_dict:

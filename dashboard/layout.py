@@ -7,7 +7,6 @@ from dash import (
     dash_table,
     callback_context,
     no_update,
-    State,
 )
 import dash_bootstrap_components as dbc
 
@@ -658,9 +657,20 @@ rep_primary_layout = dcc.Loading(
     ],
     Input("interval-component", "n_intervals"),
 )
-def update(n):
+def update_data_stores(n):
     """
-    This function populates data stores and components
+    This callback populates the 3 data stores with polling data
+
+    inputs:
+        n (int): Number of intervals from the interval component
+
+    returns:
+        national-average-store | data - list(dict) : A list of dictionaries of national polling averages
+        national-favorability-store | data - list(dict) : A list of dictionaries of national candidate favorability polls
+        state-polls-store | data - list(dict) : A list of dictionaries of state polling data
+        date-range  | date - datetime: 30 days prior to today
+        date-range | max_date_allowed - datetime: Today's date
+
     """
     national_avg_poll_df, national_favorability_df, state_polls_df = query.queryData()
 
@@ -699,7 +709,7 @@ def update(n):
         Input("state-select", "value"),
     ],
 )
-def update_current_standing_figures(
+def update_current_polling_figures(
     national_avg_data,
     national_favorability_data,
     state_poll_data,
@@ -708,14 +718,30 @@ def update_current_standing_figures(
     state,
 ):
     """
-    This function generates all visualizations
-    :param national_avg_data:
-    :param national_favorability_data:
-    :param state_poll_data:
-    :param candidate:
-    :param start_date:
-    :return:
+    This callback updates all visualizations on the 'Current Polling' tab
+
+    inputs:
+        national-average-store | national_avg_data - list(dict) : A dictionary of national polling averages
+        national-favorability-store | national_favorability_data - list(dict) : A dictionary of national candidate favorability polls
+        state-polls-store | state_poll_data - list(dict) : A dictionary of state polling data
+        candidate | value -  str: Candidate selected in dropdown component
+        date-range  | start_date - datetime: Start date selected by user in dropdown component
+        state-select | state - datetime: State selected by user in dropdown
+
+    returns:
+        candidate-voting-kpi-card | figure: A KPI card containing the candidate's current position and vote %
+        party-voting-pie | figure: A pie chart of the entire field's vote %
+        candidate-voting-trend | figure: A historical line graph containing the actual poll data and a rolling average
+        candidate-favorability-kpi-card | figure: A KPI card containing the canddiate's current favorability and unfavorability data
+        candidate-favorability-trend | figure: A line graph containing the average favorable v unfavorable for the candidate
+        party-favorability-bar | figure: A stacked bar chart of the entire field's favorability and unfavorability
+        state-choropleth | figure: A map showing each state's current poll leader
+        state-table | data list(dict): Records containing the selected states current polling
+        state-table | page_current int: Return 0 to reset table to first page upon state change
+        states-table | data list(dict): Records containing each state, it's leading candidate and their current vote %
+        states-table | page_current int: Return 0 to reset table to first page upon update
     """
+
     national_avg_poll_df = pd.DataFrame(national_avg_data)
     national_favorability_df = pd.DataFrame(national_favorability_data)
     state_poll_df = pd.DataFrame(state_poll_data)
@@ -774,7 +800,24 @@ def update_current_standing_figures(
         Input("states-table", "data"),
     ],
 )
-def update_sim(n_trials, run_sim, df):
+def update_election_simulation_figures(n_trials, run_sim, df):
+    """
+    This callback updates all visualizations on the "Election Simulation" tab.
+
+    inputs:
+        trial-count | n_trials - int : Number of simulation trials to run
+        run-simulation | n_clicks - int: Number of times the button has been pressed
+        states-table | df: A dataframe containing the state hypo data.
+
+
+    returns:
+        sim-table | data list(dict): Records containing each states simulation results
+        sim-table | page_current int: Return 0 to reset table to first page upon update
+        power-bar | figure: A bar graph of each state's political power
+        results-card | style: Show/hide the bottom card
+        trump-win-pct | children: A card showing Trump's calculated win percentage
+    """
+
     ctx = callback_context
     input_id = ctx.triggered[0]["prop_id"].split(".")[0]
 
@@ -784,9 +827,17 @@ def update_sim(n_trials, run_sim, df):
     hypo_dict = hypo_df.to_dict()
 
     if input_id == "run-simulation":
-        df, trump_win_pct = func.monte_carlo(int(n_trials), hypo_dict["Scenario"])
-        power_bar = func.power_bar(df)
+        results_df, trump_win_pct = func.monte_carlo(
+            int(n_trials), hypo_dict["Scenario"]
+        )
+        power_bar = func.power_bar(results_df)
 
-        return df.to_dict("records"), 0, power_bar, {"display": "block"}, format(trump_win_pct/100,'.2%')
+        return (
+            results_df.to_dict("records"),
+            0,
+            power_bar,
+            {"display": "block"},
+            format(trump_win_pct / 100, ".2%"),
+        )
     else:
         return no_update, no_update, no_update, no_update, no_update
