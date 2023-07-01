@@ -1,13 +1,14 @@
-from copy import copy
-
 import plotly.express as px
-from random import randint
 import pandas as pd
 import plotly.graph_objects as go
+from copy import copy
+from random import randint
 from dashboard.constants import color_mapping_dict, states, state_order_list
+from datetime import datetime, date
+from typing import Any, Tuple
 
 
-def state_standing_map(state_poll_df):
+def state_standing_map(state_poll_df: pd.DataFrame) -> px.bar:
     """
     This function creates a choropleth map displaying the current poll leader in each state
 
@@ -51,7 +52,9 @@ def state_standing_map(state_poll_df):
     return fig
 
 
-def candidate_voting_trend(national_avg_poll_df, candidate, start_date):
+def candidate_voting_trend(
+    national_avg_poll_df: pd.DataFrame, candidate: str, start_date: date
+) -> go.Figure:
     """
     This function creates a historical line graph of candidate vote pct and a 5 day rolling average.
 
@@ -107,7 +110,9 @@ def candidate_voting_trend(national_avg_poll_df, candidate, start_date):
     return fig
 
 
-def candidate_favorability_trend(national_favorability_df, candidate, start_date):
+def candidate_favorability_trend(
+    national_favorability_df: pd.DataFrame, candidate: str, start_date: date
+) -> go.Figure:
     """
      This function creates a historical line graph of candidate favorability vs unfavorability.
 
@@ -184,7 +189,7 @@ def candidate_favorability_trend(national_favorability_df, candidate, start_date
     return fig
 
 
-def party_favorability_stacked_bar(national_favorability_df):
+def party_favorability_stacked_bar(national_favorability_df: pd.DataFrame) -> px.bar:
     """
     This function creates a stacked bar of favorable vs unfavorable for the entire candidate field
 
@@ -225,7 +230,7 @@ def party_favorability_stacked_bar(national_favorability_df):
     return fig
 
 
-def party_voting_pie(national_avg_poll_df):
+def party_voting_pie(national_avg_poll_df: pd.DataFrame) -> go.Figure:
     """
     This function creates a pie chart of the current standing of all republican candidates
 
@@ -272,7 +277,9 @@ def party_voting_pie(national_avg_poll_df):
     return fig
 
 
-def candidate_favorability_kpi_card(national_favorability_df, candidate, start_date):
+def candidate_favorability_kpi_card(
+    national_favorability_df: pd.DataFrame, candidate: str, start_date: date
+) -> go.Figure:
     """
     This function creates the KPI card of candidate favorability data
 
@@ -321,7 +328,9 @@ def candidate_favorability_kpi_card(national_favorability_df, candidate, start_d
     return fig
 
 
-def candidate_voting_kpi_card(national_avg_poll_df, candidate, start_date):
+def candidate_voting_kpi_card(
+    national_avg_poll_df: pd.DataFrame, candidate: str, start_date: date
+) -> go.Figure:
     """
     This function creates the KPI card of a candidate's vote percent and position in the race
 
@@ -394,7 +403,7 @@ def candidate_voting_kpi_card(national_avg_poll_df, candidate, start_date):
     return fig
 
 
-def state_ranking_df(state_poll_df, state):
+def state_ranking_df(state_poll_df: pd.DataFrame, state: str) -> pd.DataFrame:
     """
     This function creates a dataframe containing a state's current poll data
 
@@ -428,7 +437,7 @@ def state_ranking_df(state_poll_df, state):
     return df
 
 
-def states_ranking_df(state_poll_df):
+def states_ranking_df(state_poll_df: pd.DataFrame) -> pd.DataFrame:
     """
     This function calculates the current leader of each state
 
@@ -465,7 +474,7 @@ def states_ranking_df(state_poll_df):
     return new_df
 
 
-def power_bar(results_df):
+def power_bar(results_df: pd.DataFrame) -> px.bar:
     """
     This function creates a bar chart of each state's political power
 
@@ -486,12 +495,12 @@ def power_bar(results_df):
     return fig
 
 
-def monte_carlo(n_trials, hypo_dict):
+def monte_carlo(n_trials: int, hypo_dict: dict[str, Any]) -> Tuple[pd.DataFrame, float]:
     """
     This function performs a monte carlo simulation of political power
 
     inputs:
-        n_trials - int: Number of trials to run in the simulation
+        n_trials - int: Numbermn of trials to run in the simulation
         hypo_dict - dic: A dictionary containing state hypo data.
 
     returns:

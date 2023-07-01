@@ -7,6 +7,8 @@ from about_me_layout import about_me_layout
 from sidebar import sidebar
 from dash_bootstrap_templates import load_figure_template
 
+from typing import Any
+
 dbc_css = (
     "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates@V1.0.2/dbc.min.css"
 )
@@ -36,7 +38,7 @@ app.layout = html.Div(
 
 
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
-def render_page_content(pathname):
+def render_page_content(pathname: str) -> Any:
     """
     This callback supports URL routing within the dash app
     """
@@ -62,7 +64,7 @@ def render_page_content(pathname):
     [Input("sidebar-toggle", "n_clicks")],
     [State("sidebar", "className")],
 )
-def toggle_classname(n, classname):
+def toggle_classname(n: int, classname: str) -> Any:
     """
     This callback supports the show/hide of the sidebar
     """
@@ -76,7 +78,7 @@ def toggle_classname(n, classname):
     [Input("navbar-toggle", "n_clicks")],
     [State("collapse", "is_open")],
 )
-def toggle_collapse(n, is_open):
+def toggle_collapse(n: int, is_open: str) -> Any:
     """
     This callback supports the show/hide of the sidebar
     """

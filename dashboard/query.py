@@ -1,7 +1,5 @@
 import pandas as pd
-import requests
-import io
-
+from typing import Tuple
 
 code = {
     "Alabama": "AL",
@@ -79,7 +77,7 @@ import_columns = [
 ]
 
 
-def queryData():
+def query_data() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     # database query step goes here, importing for CSV for demo purposes
 
     national_avg_poll_df = pd.read_csv(
