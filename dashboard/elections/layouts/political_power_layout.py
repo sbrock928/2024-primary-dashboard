@@ -1,8 +1,8 @@
 import dash_bootstrap_components as dbc
 from dash import html, dash_table, dcc
 
-political_power_sim_table = dash_table.DataTable(
-    id="political-power-sim-table",
+simulation_power_table = dash_table.DataTable(
+    id="simulation-power-table",
     columns=[
         {"name": "State", "id": "State"},
         {"name": "Delegates", "id": "Delegates"},
@@ -45,8 +45,8 @@ political_power_sim_table = dash_table.DataTable(
     css=[{"selector": ".column-header-name", "rule": "margin-left:unset;"}],
 )
 
-ge_political_power_sim_table = dash_table.DataTable(
-    id="ge-banzhaf-power-sim-table",
+banzhaf_power_table = dash_table.DataTable(
+    id="banzhaf-power-table",
     columns=[
         {"name": "State", "id": "State"},
         {"name": "Electoral Votes", "id": "Electoral Votes"},
@@ -139,10 +139,9 @@ political_power_tab = dbc.Tab(
                                             [
                                                 dbc.Card(
                                                     dcc.Loading(
-                                                        id="loading7",
                                                         children=[
                                                             html.Div(
-                                                                ge_political_power_sim_table
+                                                                banzhaf_power_table
                                                             )
                                                         ],
                                                         type="circle",
@@ -156,10 +155,9 @@ political_power_tab = dbc.Tab(
                                             [
                                                 dbc.Card(
                                                     dcc.Loading(
-                                                        id="loading8",
                                                         children=[
                                                             dcc.Graph(
-                                                                id="power-bar-ge-banzhaf",
+                                                                id="banzhaf-power-bar",
                                                                 config={
                                                                     "displayModeBar": False
                                                                 },
@@ -193,7 +191,7 @@ political_power_tab = dbc.Tab(
                                         dbc.Col(
                                             [
                                                 dcc.Dropdown(
-                                                    id="trial-count-state-power",
+                                                    id="trial-count-political-power",
                                                     options=[
                                                         {
                                                             "label": "10,000",
@@ -218,7 +216,7 @@ political_power_tab = dbc.Tab(
                                             [
                                                 html.Button(
                                                     "Run Simulation",
-                                                    id="run-simulation-state-power",
+                                                    id="run-simulation-political-power",
                                                 )
                                             ]
                                         ),
@@ -234,10 +232,9 @@ political_power_tab = dbc.Tab(
                                             [
                                                 dbc.Card(
                                                     dcc.Loading(
-                                                        id="loading4",
                                                         children=[
                                                             html.Div(
-                                                                political_power_sim_table
+                                                                simulation_power_table
                                                             )
                                                         ],
                                                         type="circle",
@@ -251,10 +248,9 @@ political_power_tab = dbc.Tab(
                                             [
                                                 dbc.Card(
                                                     dcc.Loading(
-                                                        id="loading3",
                                                         children=[
                                                             dcc.Graph(
-                                                                id="power-bar-state-power",
+                                                                id="simulation-power-bar",
                                                                 config={
                                                                     "displayModeBar": False
                                                                 },

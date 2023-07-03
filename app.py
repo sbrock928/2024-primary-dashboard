@@ -6,7 +6,13 @@ from dashboard.elections.layouts.main_layout import election_dashboard_layout
 from dashboard.about_me import about_me_layout
 from dashboard.sidebar import sidebar
 from dash_bootstrap_templates import load_figure_template
-from dashboard.elections.callbacks import get_callbacks
+from dashboard.elections.callbacks import (
+    main_election_callbacks,
+    election_sim_callbacks,
+    political_power_sim_callbacks,
+    polling_callbacks,
+)
+
 
 from typing import Any
 
@@ -23,7 +29,11 @@ app = dash.Dash(
 )
 server = app.server
 app.config.suppress_callback_exceptions = True
-get_callbacks(app)
+
+main_election_callbacks.register_callbacks(app)
+polling_callbacks.register_callbacks(app)
+election_sim_callbacks.register_callbacks(app)
+political_power_sim_callbacks.register_callbacks(app)
 
 app.layout = html.Div(
     [

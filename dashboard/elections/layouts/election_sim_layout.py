@@ -2,8 +2,8 @@ import dash_bootstrap_components as dbc
 from dash import html, dash_table, dcc
 
 
-states_table = dash_table.DataTable(
-    id="states-table",
+state_input_table = dash_table.DataTable(
+    id="state-input-table",
     page_size=10,
     style_as_list_view=True,
     sort_action="native",
@@ -57,8 +57,8 @@ states_table = dash_table.DataTable(
     },
 )
 
-sim_table = dash_table.DataTable(
-    id="sim-table",
+simulation_election_table = dash_table.DataTable(
+    id="simulation-election-table",
     columns=[
         {"name": "State", "id": "State"},
         {"name": "Delegates", "id": "Delegates"},
@@ -159,7 +159,7 @@ election_sim_tab = dbc.Tab(
                                                 dbc.Col(
                                                     [
                                                         dcc.Dropdown(
-                                                            id="trial-count",
+                                                            id="trial-count-election",
                                                             options=[
                                                                 {
                                                                     "label": "10,000",
@@ -184,7 +184,7 @@ election_sim_tab = dbc.Tab(
                                                     [
                                                         html.Button(
                                                             "Run Simulation",
-                                                            id="run-simulation",
+                                                            id="run-simulation-election",
                                                         )
                                                     ]
                                                 ),
@@ -198,7 +198,7 @@ election_sim_tab = dbc.Tab(
                                             [
                                                 dbc.Col(
                                                     [
-                                                        html.Div(states_table),
+                                                        html.Div(state_input_table),
                                                     ],
                                                     sm=12,
                                                     xxl=6,
@@ -266,10 +266,9 @@ election_sim_tab = dbc.Tab(
                                             [
                                                 dbc.Card(
                                                     dcc.Loading(
-                                                        id="loading2",
                                                         children=[
                                                             dcc.Graph(
-                                                                id="power-bar",
+                                                                id="simulation-election-bar",
                                                                 config={
                                                                     "displayModeBar": False
                                                                 },
@@ -289,8 +288,11 @@ election_sim_tab = dbc.Tab(
                                         dbc.Col(
                                             [
                                                 dcc.Loading(
-                                                    id="loading3",
-                                                    children=[html.Div(sim_table)],
+                                                    children=[
+                                                        html.Div(
+                                                            simulation_election_table
+                                                        )
+                                                    ],
                                                     type="circle",
                                                 ),
                                             ]

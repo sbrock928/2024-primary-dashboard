@@ -12,9 +12,9 @@ election_dashboard_layout = dcc.Loading(
         [
             dcc.Store(id="national-average-store"),
             dcc.Store(id="national-favorability-store"),
-            dcc.Store(id="state-polls-store", storage_type="memory"),
+            dcc.Store(id="state-polls-store"),
             html.H2(
-                "Republican Primary Dataset",
+                "2024 Presidential Election",
             ),
             dbc.Tabs([polling_tab, political_power_tab, election_sim_tab]),
         ]
