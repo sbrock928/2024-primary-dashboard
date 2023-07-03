@@ -3,8 +3,8 @@ import pandas as pd
 import plotly.graph_objects as go
 from copy import copy
 from random import randint
-from dashboard.constants import color_mapping_dict, states, state_order_list
-from datetime import datetime, date
+from dashboard.elections.constants import color_mapping_dict, states, state_order_list
+from datetime import date
 from typing import Any, Tuple, List
 
 
