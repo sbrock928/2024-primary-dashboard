@@ -16,7 +16,7 @@ import plotly.express as px
 import datetime
 
 from dashboard import query, func
-from dashboard.constants import states
+from dashboard.constants import states, electoral_votes, electoral_state_order
 
 from typing import Any, Dict, List, Tuple
 
@@ -27,6 +27,87 @@ date_picker = (
     ),
 )
 
+ge_political_power_sim_table = dash_table.DataTable(
+    id="ge-banzhaf-power-sim-table",
+    columns=[
+        {"name": "State", "id": "State"},
+        {"name": "Electoral Votes", "id": "Electoral Votes"},
+        {
+            "name": "Power",
+            "id": "Power",
+            "type": "numeric",
+            "format": dash_table.FormatTemplate.percentage(2),
+        },
+    ],
+    page_size=10,
+    style_as_list_view=True,
+    sort_action="native",
+    style_table={"overflowX": "auto", "border": "3px solid black"},
+    style_header={
+        "padding-left": "0px",
+        "margin-left": "0px",
+        "textAlign": "left",
+        "fontWeight": "bold",
+        "backgroundColor": "#3B3331",
+        "color": "white",
+    },
+    style_cell={
+        "padding-left": "0px",
+        "textAlign": "left",
+        "overflow": "hidden",
+        "textOverflow": "ellipsis",
+        "color": "black",
+        "minWidth": "10px",
+        "width": "10px",
+        "maxWidth": "250px",
+    },
+    css=[{"selector": ".column-header-name", "rule": "margin-left:unset;"}],
+)
+
+
+political_power_sim_table = dash_table.DataTable(
+    id="political-power-sim-table",
+    columns=[
+        {"name": "State", "id": "State"},
+        {"name": "Delegates", "id": "Delegates"},
+        {"name": "Winning Coalition Count", "id": "Winning Coalition Count"},
+        {
+            "name": "Winning Coalition Pct",
+            "id": "Winning Coalition Pct",
+            "type": "numeric",
+            "format": dash_table.FormatTemplate.percentage(2),
+        },
+        {
+            "name": "Power",
+            "id": "Power",
+            "type": "numeric",
+            "format": dash_table.FormatTemplate.percentage(2),
+        },
+    ],
+    page_size=10,
+    style_as_list_view=True,
+    sort_action="native",
+    style_table={"overflowX": "auto", "border": "3px solid black"},
+    style_header={
+        "padding-left": "0px",
+        "margin-left": "0px",
+        "textAlign": "left",
+        "fontWeight": "bold",
+        "backgroundColor": "#3B3331",
+        "color": "white",
+    },
+    style_cell={
+        "padding-left": "0px",
+        "textAlign": "left",
+        "overflow": "hidden",
+        "textOverflow": "ellipsis",
+        "color": "black",
+        "minWidth": "10px",
+        "width": "10px",
+        "maxWidth": "250px",
+    },
+    css=[{"selector": ".column-header-name", "rule": "margin-left:unset;"}],
+)
 
 sim_table = dash_table.DataTable(
     id="sim-table",
@@ -34,7 +115,18 @@ sim_table = dash_table.DataTable(
         {"name": "State", "id": "State"},
         {"name": "Delegates", "id": "Delegates"},
         {"name": "Winning Coalition Count", "id": "Winning Coalition Count"},
-        {"name": "Winning Coalition Pct", "id": "Winning Coalition Pct"},
+        {
+            "name": "Winning Coalition Pct",
+            "id": "Winning Coalition Pct",
+            "type": "numeric",
+            "format": dash_table.FormatTemplate.percentage(2),
+        },
+        {
+            "name": "Power",
+            "id": "Power",
+            "type": "numeric",
+            "format": dash_table.FormatTemplate.percentage(2),
+        },
     ],
     page_size=10,
     style_as_list_view=True,
@@ -449,6 +541,202 @@ rep_primary_layout = dcc.Loading(
                                                                                 """
                                                                                 This is a simulation of Trump's winning chances based on different hypothetical scenarios of states won.\
                                                                                 Users can select different states to assign to Trump, the Opposition candidate, or random chance between the two.
+                    
+                                                                                1. Select number of trials to be run (Dropdown Below)
+                                                                                2. In the 'Scenario' column of the below table, select the dropdown on a state if you wish to guarantee a win
+                                                                                3. Click 'Run Simulation'
+                                                                            """
+                                                                            )
+                                                                        ]
+                                                                    ),
+                                                                ],
+                                                                style={
+                                                                    "padding-top": "10px",
+                                                                    "padding-bottom": "10px",
+                                                                },
+                                                            )
+                                                        ]
+                                                    ),
+                                                ]
+                                            )
+                                        ],
+                                        sm=12,
+                                        xxl=12,
+                                    )
+                                ],
+                                style={"padding-top": "10px", "padding-bottom": "10px"},
+                            ),
+                            dbc.Row(
+                                dbc.Col(
+                                    dbc.Card(
+                                        children=[
+                                            dbc.CardHeader("General Election Power"),
+                                            dbc.CardBody(
+                                                [
+                                                    dbc.Row(
+                                                        [
+                                                            dbc.Col(
+                                                                [
+                                                                    dbc.Card(
+                                                                        dcc.Loading(
+                                                                            id="loading7",
+                                                                            children=[
+                                                                                html.Div(
+                                                                                    ge_political_power_sim_table
+                                                                                )
+                                                                            ],
+                                                                            type="circle",
+                                                                        ),
+                                                                    )
+                                                                ],
+                                                                sm=12,
+                                                                xxl=8,
+                                                            ),
+                                                            dbc.Col(
+                                                                [
+                                                                    dbc.Card(
+                                                                        dcc.Loading(
+                                                                            id="loading8",
+                                                                            children=[
+                                                                                dcc.Graph(
+                                                                                    id="power-bar-ge-banzhaf",
+                                                                                    config={
+                                                                                        "displayModeBar": False
+                                                                                    },
+                                                                                )
+                                                                            ],
+                                                                            type="circle",
+                                                                        ),
+                                                                    )
+                                                                ],
+                                                                sm=12,
+                                                                xxl=4,
+                                                            ),
+                                                        ]
+                                                    ),
+                                                ]
+                                            ),
+                                        ],
+                                    )
+                                )
+                            ),
+                            dbc.Row(
+                                dbc.Col(
+                                    dbc.Card(
+                                        id="results-card-state-power",
+                                        children=[
+                                            dbc.CardHeader("Results"),
+                                            dbc.CardBody(
+                                                [
+                                                    dbc.Row(
+                                                        [
+                                                            dbc.Col(
+                                                                [
+                                                                    dcc.Dropdown(
+                                                                        id="trial-count-state-power",
+                                                                        options=[
+                                                                            {
+                                                                                "label": "10,000",
+                                                                                "value": "10000",
+                                                                            },
+                                                                            {
+                                                                                "label": "50,000",
+                                                                                "value": "50000",
+                                                                            },
+                                                                            {
+                                                                                "label": "100,000",
+                                                                                "value": "100000",
+                                                                            },
+                                                                        ],
+                                                                        placeholder="Select Number of Trials",
+                                                                        value=10000,
+                                                                        clearable=False,
+                                                                    )
+                                                                ]
+                                                            ),
+                                                            dbc.Col(
+                                                                [
+                                                                    html.Button(
+                                                                        "Run Simulation",
+                                                                        id="run-simulation-state-power",
+                                                                    )
+                                                                ]
+                                                            ),
+                                                        ],
+                                                        style={
+                                                            "padding-top": "10px",
+                                                            "padding-bottom": "10px",
+                                                        },
+                                                    ),
+                                                    dbc.Row(
+                                                        [
+                                                            dbc.Col(
+                                                                [
+                                                                    dbc.Card(
+                                                                        dcc.Loading(
+                                                                            id="loading4",
+                                                                            children=[
+                                                                                html.Div(
+                                                                                    political_power_sim_table
+                                                                                )
+                                                                            ],
+                                                                            type="circle",
+                                                                        ),
+                                                                    )
+                                                                ],
+                                                                sm=12,
+                                                                xxl=8,
+                                                            ),
+                                                            dbc.Col(
+                                                                [
+                                                                    dbc.Card(
+                                                                        dcc.Loading(
+                                                                            id="loading3",
+                                                                            children=[
+                                                                                dcc.Graph(
+                                                                                    id="power-bar-state-power",
+                                                                                    config={
+                                                                                        "displayModeBar": False
+                                                                                    },
+                                                                                )
+                                                                            ],
+                                                                            type="circle",
+                                                                        ),
+                                                                    )
+                                                                ],
+                                                                sm=12,
+                                                                xxl=4,
+                                                            ),
+                                                        ]
+                                                    ),
+                                                ]
+                                            ),
+                                        ],
+                                    )
+                                )
+                            ),
+                        ],
+                        label="Political Power Simulation",
+                    ),
+                    dbc.Tab(
+                        [
+                            dbc.Row(
+                                [
+                                    dbc.Col(
+                                        [
+                                            dbc.Card(
+                                                [
+                                                    dbc.CardHeader("Instructions"),
+                                                    dbc.CardBody(
+                                                        [
+                                                            dbc.Row(
+                                                                [
+                                                                    dbc.Col(
+                                                                        [
+                                                                            dcc.Markdown(
+                                                                                """
+                                                                                This is a simulation of Trump's winning chances based on different hypothetical scenarios of states won.\
+                                                                                Users can select different states to assign to Trump, the Opposition candidate, or random chance between the two.
                                                                                 
                                                                                 1. Select number of trials to be run (Dropdown Below)
                                                                                 2. In the 'Scenario' column of the below table, select the dropdown on a state if you wish to guarantee a win
@@ -812,6 +1100,88 @@ def update_current_polling_figures(
 
 @callback(
     [
+        Output("power-bar-ge-banzhaf", "figure"),
+        Output("ge-banzhaf-power-sim-table", "data"),
+        Output("ge-banzhaf-power-sim-table", "page_current"),
+        Output("power-bar-state-power", "figure"),
+        Output("political-power-sim-table", "data"),
+        Output("political-power-sim-table", "page_current"),
+    ],
+    [
+        Input("trial-count-state-power", "value"),
+        Input("run-simulation-state-power", "n_clicks"),
+    ],
+)
+def update_political_power_simulation_figures(
+    n_trials: int, run_sim: int
+) -> Tuple[px.bar, Any, int, px.bar, Any, int]:
+    """
+    This callback updates all visualizations on the "Election Simulation" tab.
+
+    inputs:
+        trial-count-state-power | n_trials - int : Number of simulation trials to run
+        run-simulation-state-power | n_clicks - int: Number of times the button has been pressed
+
+
+    returns:
+        power-bar-ge-banzhaf | figure: A bar graph of each state's political power in the general election
+        ge-political-power-sim-table | data list(dict): Records containing each states banzhaf results
+        ge-political-power-sim-table | page_current int: Return 0 to reset table to first page upon update
+        power-bar-state-power | figure: A bar graph of each state's political power
+        political-power-sim-table | data list(dict): Records containing each states simulation results
+        political-power-sim-table | page_current int: Return 0 to reset table to first page upon update
+    """
+
+    ctx = callback_context
+    input_id = ctx.triggered[0]["prop_id"].split(".")[0]
+
+    if input_id == "run-simulation-state-power":
+        results_df = func.primary_election_power_monte_carlo(
+            int(n_trials),
+        )
+        power_bar = func.political_power_bar(results_df)
+        return (
+            no_update,
+            no_update,
+            no_update,
+            power_bar,
+            results_df.to_dict("records"),
+            0,
+        )
+    elif input_id == "trial-count-state-power":
+        return no_update, no_update, no_update, no_update, no_update, no_update
+    else:
+        banzhaf_index = func.banzhaf(electoral_votes, 270)
+        general_election_power = {}
+        for i in range(len(banzhaf_index)):
+            general_election_power[electoral_state_order[i]] = {
+                "Electoral Votes": electoral_votes[i],
+                "Power": banzhaf_index[i],
+            }
+
+        ge_power_df = pd.DataFrame.from_dict(general_election_power, orient="index")
+        ge_power_df.reset_index(inplace=True)
+        ge_power_df.rename(columns={"index": "State", 0: "Power"}, inplace=True)
+        ge_power_df.sort_values(by="Power", ascending=False, inplace=True)
+        ge_power_bar = func.political_power_bar(ge_power_df)
+
+        results_df = func.primary_election_power_monte_carlo(
+            int(n_trials),
+        )
+        power_bar = func.political_power_bar(results_df)
+
+        return (
+            ge_power_bar,
+            ge_power_df.to_dict("records"),
+            0,
+            power_bar,
+            results_df.to_dict("records"),
+            0,
+        )
+
+
+@callback(
+    [
         Output("sim-table", "data"),
         Output("sim-table", "page_current"),
         Output("power-bar", "figure"),
@@ -853,10 +1223,10 @@ def update_election_simulation_figures(
     hypo_dict = hypo_df.to_dict()
 
     if input_id == "run-simulation":
-        results_df, trump_win_pct = func.monte_carlo(
+        results_df, trump_win_pct = func.election_simulation_monte_carlo(
             int(n_trials), hypo_dict["Scenario"]
         )
-        power_bar = func.power_bar(results_df)
+        power_bar = func.political_power_bar(results_df)
 
         return (
             results_df.to_dict("records"),
