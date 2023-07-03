@@ -1,93 +1,34 @@
-import pandas as pd
 from typing import Tuple
 
-code = {
-    "Alabama": "AL",
-    "Alaska": "AK",
-    "Arizona": "AZ",
-    "Arkansas": "AR",
-    "California": "CA",
-    "Colorado": "CO",
-    "Connecticut": "CT",
-    "Delaware": "DE",
-    "District of Columbia": "DC",
-    "Florida": "FL",
-    "Georgia": "GA",
-    "Hawaii": "HI",
-    "Idaho": "ID",
-    "Illinois": "IL",
-    "Indiana": "IN",
-    "Iowa": "IA",
-    "Kansas": "KS",
-    "Kentucky": "KY",
-    "Louisiana": "LA",
-    "Maine": "ME",
-    "Maryland": "MD",
-    "Massachusetts": "MA",
-    "Michigan": "MI",
-    "Minnesota": "MN",
-    "Mississippi": "MS",
-    "Missouri": "MO",
-    "Montana": "MT",
-    "Nebraska": "NE",
-    "Nevada": "NV",
-    "New Hampshire": "NH",
-    "New Jersey": "NJ",
-    "New Mexico": "NM",
-    "New York": "NY",
-    "North Carolina": "NC",
-    "North Dakota": "ND",
-    "Ohio": "OH",
-    "Oklahoma": "OK",
-    "Oregon": "OR",
-    "Pennsylvania": "PA",
-    "Rhode Island": "RI",
-    "South Carolina": "SC",
-    "South Dakota": "SD",
-    "Tennessee": "TN",
-    "Texas": "TX",
-    "Utah": "UT",
-    "Vermont": "VT",
-    "Virginia": "VA",
-    "Washington": "WA",
-    "West Virginia": "WV",
-    "Wisconsin": "WI",
-    "Wyoming": "WY",
-}
+import pandas as pd
 
-candidate_names = {
-    "Mike Pence": "Pence",
-    "Nikki Haley": "Haley",
-    "Ron DeSantis": "DeSantis",
-    "Tim Scott": "Scott",
-    "T. Scott": "Scott",
-    "Donald Trump": "Trump",
-    "Asa Hutchinson": "Hutchinson",
-    "Vivek G. Ramaswamy": "Ramaswamy",
-    "Doug Burgum": "Burgum",
-    "Chris Christie": "Christie",
-}
-import_columns = [
-    "candidate",
-    "date",
-    "pct_estimate",
-    "state",
-    "pct_trend_adjusted",
-    "cycle",
-]
+from dashboard.elections.constants import (
+    import_columns,
+    candidate_names,
+    state_code_mapping,
+)
 
 
-def query_data() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    # database query step goes here, importing for CSV for demo purposes
+def get_national_avg_polling_data() -> pd.DataFrame:
+    """
+    This function imports national average polling data from FiveThirtyEight, converts to a Panda's dataframe and clean/scrubs data
 
+    returns:
+        national_avg_poll_df | Panda's Dataframe : A Panda's dataframe of national polling averages
+
+
+    """
+    # Import csv as dataframe
     national_avg_poll_df = pd.read_csv(
         "https://projects.fivethirtyeight.com/polls/data/presidential_primary_averages.csv",
         engine="python",
     )
 
+    # Remove prior election cycle data and take only columns we need
     national_avg_poll_df = national_avg_poll_df[national_avg_poll_df["cycle"] == 2024]
     national_avg_poll_df = national_avg_poll_df[import_columns]
 
+    # Rename columns
     national_avg_poll_df.rename(
         columns={
             "candidate": "Candidate",
@@ -97,6 +38,7 @@ def query_data() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         inplace=True,
     )
 
+    # Format candidate names and select only top republican candidates
     national_avg_poll_df["Candidate"] = national_avg_poll_df["Candidate"].replace(
         candidate_names
     )
@@ -116,10 +58,26 @@ def query_data() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         )
     ]
 
+    return national_avg_poll_df
+
+
+def get_national_favorability_polling_data() -> pd.DataFrame:
+    """
+    This function imports national favorability polling data from FiveThirtyEight, converts to a Panda's dataframe and clean/scrubs data
+
+    returns:
+        national_favorability_df | Panda's Dataframe : A Panda's dataframe of national polling averages
+
+
+    """
+
+    # Import csv as dataframe
     national_favorability_df = pd.read_csv(
         "https://projects.fivethirtyeight.com/polls-page/data/favorability_polls.csv",
         engine="python",
     )
+
+    # Rename columns
     national_favorability_df.rename(
         columns={
             "politician": "Candidate",
@@ -134,6 +92,7 @@ def query_data() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         inplace=True,
     )
 
+    # Replace candidate names and select only top republican candidates
     national_favorability_df["Candidate"] = national_favorability_df[
         "Candidate"
     ].replace(candidate_names)
@@ -153,11 +112,26 @@ def query_data() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         )
     ]
 
+    return national_favorability_df
+
+
+def get_state_polling_data() -> pd.DataFrame:
+    """
+    This function imports state polling data from FiveThirtyEight, converts to a Panda's dataframe and clean/scrubs data
+
+    returns:
+        state_polls_df | Panda's Dataframe : A Panda's dataframe of national polling averages
+
+
+    """
+
+    # Import csv as dataframe
     state_polls_df = pd.read_csv(
         "https://projects.fivethirtyeight.com/polls-page/data/president_primary_polls.csv",
         engine="python",
     )
 
+    # Rename columns
     state_polls_df.rename(
         columns={
             "end_date": "Date",
@@ -167,9 +141,13 @@ def query_data() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         inplace=True,
     )
 
-    state_polls_df["Code"] = state_polls_df["state"].map(code)
-    state_polls_df["state"] = state_polls_df["state"].map(code)
+    # Replace state code and
+    state_polls_df["Code"] = state_polls_df["state"].map(state_code_mapping)
+
+    # Get rid of rows where state is null
     state_polls_df = state_polls_df[~state_polls_df.Code.isnull()]
+
+    # Replace candidate names and select only top republican candidates
     state_polls_df["Candidate"] = state_polls_df["Candidate"].replace(candidate_names)
     state_polls_df = state_polls_df[
         state_polls_df["Candidate"].isin(
@@ -187,4 +165,4 @@ def query_data() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         )
     ]
 
-    return national_avg_poll_df, national_favorability_df, state_polls_df
+    return state_polls_df

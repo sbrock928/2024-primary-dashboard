@@ -1,20 +1,19 @@
+from typing import Any
+
 import dash
 import dash_bootstrap_components as dbc
-
 from dash import html, dcc, Input, Output, State
-from dashboard.elections.layouts.main_layout import election_dashboard_layout
-from dashboard.about_me import about_me_layout
-from dashboard.sidebar import sidebar
 from dash_bootstrap_templates import load_figure_template
+
+from dashboard.about_me import about_me_layout
 from dashboard.elections.callbacks import (
     main_election_callbacks,
     election_sim_callbacks,
     political_power_sim_callbacks,
     polling_callbacks,
 )
-
-
-from typing import Any
+from dashboard.elections.layouts.main_layout import election_dashboard_layout
+from dashboard.sidebar import sidebar
 
 dbc_css = (
     "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates@V1.0.2/dbc.min.css"

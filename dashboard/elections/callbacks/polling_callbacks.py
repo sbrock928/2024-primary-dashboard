@@ -1,15 +1,12 @@
-from dash import Input, Output, Dash
-
+import datetime
+from typing import Any, Dict, List, Tuple
 
 import pandas as pd
-import plotly.graph_objects as go
 import plotly.express as px
-import datetime
+import plotly.graph_objects as go
+from dash import Input, Output, Dash
 
 from dashboard.elections import func
-
-
-from typing import Any, Dict, List, Tuple
 
 
 def register_callbacks(app: Dash) -> None:
@@ -55,9 +52,19 @@ def register_callbacks(app: Dash) -> None:
 
         """
 
+        # Create dataframe(s) from store data
         national_avg_poll_df = pd.DataFrame(national_avg_data)
         national_favorability_df = pd.DataFrame(national_favorability_data)
 
+        # Convert date column(s) to datetime
+        national_avg_poll_df["Date"] = pd.to_datetime(
+            national_avg_poll_df["Date"], utc=False
+        )
+        national_favorability_df["Date"] = pd.to_datetime(
+            national_favorability_df["Date"], utc=False
+        )
+
+        # Create visualizations
         candidate_voting_kpi_card = func.candidate_voting_kpi_card(
             national_avg_poll_df, candidate, start_date
         )
@@ -114,11 +121,14 @@ def register_callbacks(app: Dash) -> None:
             state-table | page_current int: Return 0 to reset table to first page upon state change
 
         """
-
+        # Create dataframe(s) from store data
         state_poll_df = pd.DataFrame(state_poll_data)
 
-        state_standing_df = func.state_ranking_df(state_poll_df, state)
+        # Convert date column(s) to datetime
+        state_poll_df["Date"] = pd.to_datetime(state_poll_df["Date"], utc=False)
 
+        # Create visualizations
+        state_standing_df = func.state_ranking_df(state_poll_df, state)
         state_standing_map = func.state_standing_map(state_poll_df)
 
         return (

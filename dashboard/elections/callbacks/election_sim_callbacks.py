@@ -1,13 +1,10 @@
-from dash import Input, Output, callback_context, no_update, Dash
-
+from typing import Any, Dict, List, Tuple
 
 import pandas as pd
 import plotly.express as px
+from dash import Input, Output, callback_context, no_update, Dash
 
 from dashboard.elections import func
-
-
-from typing import Any, Dict, List, Tuple
 
 
 def register_callbacks(app: Dash) -> None:
@@ -32,7 +29,13 @@ def register_callbacks(app: Dash) -> None:
             state-input-table | page_current int: Return 0 to reset table to first page upon update
         """
 
+        # Create dataframe(s) from store data
         state_poll_df = pd.DataFrame(state_poll_data)
+
+        # Convert date column(s) to datetime
+        state_poll_df["Date"] = pd.to_datetime(state_poll_df["Date"], utc=False)
+
+        # Create visualization(s)
         state_leaders_df = func.states_ranking_df(state_poll_df)
 
         return state_leaders_df.to_dict("records"), 0

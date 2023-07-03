@@ -1,6 +1,8 @@
-import dash_bootstrap_components as dbc
 import datetime
+
+import dash_bootstrap_components as dbc
 from dash import html, dash_table, dcc
+
 from dashboard.elections.constants import states
 
 date_picker = (

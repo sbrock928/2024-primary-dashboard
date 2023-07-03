@@ -1,11 +1,19 @@
-import plotly.express as px
-import pandas as pd
-import plotly.graph_objects as go
 from copy import copy
-from random import randint
-from dashboard.elections.constants import color_mapping_dict, states, state_order_list
 from datetime import date
+from random import randint
 from typing import Any, Tuple, List
+
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+
+from dashboard.elections.constants import (
+    color_mapping_dict,
+    states,
+    state_order_list,
+    electoral_votes,
+    electoral_state_order,
+)
 
 
 def state_standing_map(state_poll_df: pd.DataFrame) -> px.bar:
@@ -21,7 +29,6 @@ def state_standing_map(state_poll_df: pd.DataFrame) -> px.bar:
     """
     df = copy(state_poll_df)
 
-    df["Date"] = pd.to_datetime(df["Date"], utc=False)
     df = df[df["notes"] != "head-to-head poll"]
 
     df = df.loc[df.groupby(["Code", "Candidate"]).Date.idxmax()].sort_values(
@@ -70,17 +77,15 @@ def candidate_voting_trend(
 
     df = copy(national_avg_poll_df)
 
-    df["Date"] = pd.to_datetime(df["Date"], utc=False)
+    # Filter by candidate
+    df = df[df["Candidate"] == candidate].sort_values("Date", ascending=True)
 
-    if type(candidate) == str:
-        df = df[df["Candidate"] == candidate].sort_values("Date", ascending=True)
-    else:
-        df = df[df["Candidate"].isin(candidate)].sort_values("Date", ascending=True)
-
+    # Calculate rolling average
     df["Rolling"] = df.groupby(["Candidate"])["Percentage"].transform(
         lambda x: x.rolling(5).mean()
     )
 
+    # Date filter
     df = df[df["Date"] >= (pd.to_datetime(start_date))]
 
     fig = go.Figure()
@@ -127,7 +132,6 @@ def candidate_favorability_trend(
     """
     df = copy(national_favorability_df)
 
-    df["Date"] = pd.to_datetime(df["Date"], utc=False)
     favorable_df = df.copy()
     unfavorable_df = df.copy()
 
@@ -204,7 +208,6 @@ def party_favorability_stacked_bar(national_favorability_df: pd.DataFrame) -> px
 
     df = copy(national_favorability_df)
 
-    df["Date"] = pd.to_datetime(df["Date"], utc=False)
     df.sort_values("Date", inplace=True, ascending=True)
 
     df = df.loc[df.groupby(["Candidate"]).Date.idxmax()]
@@ -244,7 +247,6 @@ def party_voting_pie(national_avg_poll_df: pd.DataFrame) -> go.Figure:
 
     df = copy(national_avg_poll_df)
 
-    df["Date"] = pd.to_datetime(df["Date"], utc=False)
     df = df.loc[df.groupby(["Candidate"]).Date.idxmax()]
 
     # Append a row for undecided voters
@@ -293,7 +295,6 @@ def candidate_favorability_kpi_card(
     """
 
     df = copy(national_favorability_df)
-    df["Date"] = pd.to_datetime(df["Date"], utc=False)
 
     df = df[df["Candidate"] == candidate]
 
@@ -343,11 +344,7 @@ def candidate_voting_kpi_card(
         fig - figure: A figure containing a KPI card of acandidate's vote and position data
     """
 
-    df = copy(national_avg_poll_df)
-
-    df["Date"] = pd.to_datetime(df["Date"], utc=False)
-
-    current_result = df.copy()
+    current_result = copy(national_avg_poll_df)
     current_result = current_result[current_result["Date"] == current_result.Date.max()]
     current_result["Rank"] = (
         current_result.sort_values(["Percentage"], ascending=False)
@@ -358,7 +355,7 @@ def candidate_voting_kpi_card(
     current_result = current_result[current_result["Candidate"] == candidate]
     current_result = current_result.loc[current_result.Date.idxmax()]
 
-    past_result = df.copy()
+    past_result = copy(national_avg_poll_df)
     past_result = past_result[
         past_result["Date"] >= (pd.to_datetime(start_date))
     ].sort_values("Date", ascending=False)
@@ -417,7 +414,6 @@ def state_ranking_df(state_poll_df: pd.DataFrame, state: str) -> pd.DataFrame:
 
     df = copy(state_poll_df)
 
-    df["Date"] = pd.to_datetime(df["Date"], utc=False)
     df = df[df["notes"] != "head-to-head poll"]
     df = df.loc[df.groupby(["Code", "Candidate"]).Date.idxmax()].sort_values(
         ["Percentage"], ascending=False
@@ -450,7 +446,6 @@ def states_ranking_df(state_poll_df: pd.DataFrame) -> pd.DataFrame:
 
     df = copy(state_poll_df)
 
-    df["Date"] = pd.to_datetime(df["Date"], utc=False)
     df = df[df["notes"] != "head-to-head poll"]
     df = df.loc[df.groupby(["Code", "Candidate"]).Date.idxmax()].sort_values(
         ["Percentage"], ascending=False
@@ -493,28 +488,19 @@ def political_power_bar(results_df: pd.DataFrame) -> px.bar:
     return fig
 
 
-def ge_political_power_bar(results_df: pd.DataFrame) -> px.bar:
+def banzhaf(weight: List[int], quota: int) -> pd.DataFrame:
     """
-    This function creates a bar chart of each state's political power in the general election
+    This function caLculates the banzhaf power index for a list of weights and a quota
 
     inputs:
-        results_df - dataframe: A dataframe of simulation results
+        weight - List[int] : A list of weights
+        quota - int: Number of votes required to win
 
     returns:
-        fig - figure: A bar chart of each state's political power
-    """
+        power_df - List[float]: A dataframe of states and their power index
 
-    df = copy(results_df)
-    df.sort_values(by="Power", ascending=True, inplace=True)
-
-    fig = px.bar(df, x="Power", y="State", orientation="h")
-
-    return fig
-
-
-def banzhaf(weight: List[Any], quota: int) -> List[Any]:
-    """
     From https://gist.github.com/HeinrichHartmann/8ec2e2245f2a70441257
+
     """
     max_order = sum(weight)
 
@@ -547,9 +533,23 @@ def banzhaf(weight: List[Any], quota: int) -> List[Any]:
 
     # Normalize Index
     total_power = float(sum(banzhaf_power))
-    banzhaf_index = map(lambda x: x / total_power, banzhaf_power)
+    banzhaf_index = list(map(lambda x: x / total_power, banzhaf_power))
 
-    return list(banzhaf_index)
+    # Create a dictionary of states, their electoral votes, and power index
+    general_election_power = {}
+    for i in range(len(banzhaf_index)):
+        general_election_power[electoral_state_order[i]] = {
+            "Electoral Votes": electoral_votes[i],
+            "Power": banzhaf_index[i],
+        }
+
+    # Convert to a pandas dataframe and cleanup
+    power_df = pd.DataFrame.from_dict(general_election_power, orient="index")
+    power_df.reset_index(inplace=True)
+    power_df.rename(columns={"index": "State", 0: "Power"}, inplace=True)
+    power_df.sort_values(by="Power", ascending=False, inplace=True)
+
+    return power_df
 
 
 def primary_election_power_monte_carlo(n_trials: int) -> pd.DataFrame:

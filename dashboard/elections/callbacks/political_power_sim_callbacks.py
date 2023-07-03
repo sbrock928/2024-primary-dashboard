@@ -1,15 +1,10 @@
-from dash import Input, Output, callback_context, no_update, Dash
-
-
-import pandas as pd
+from typing import Any, Tuple, List, Dict
 
 import plotly.express as px
-
+from dash import Input, Output, callback_context, no_update, Dash
 
 from dashboard.elections import func
-from dashboard.elections.constants import electoral_votes, electoral_state_order
-
-from typing import Any, Tuple, List, Dict
+from dashboard.elections.constants import electoral_votes
 
 
 def register_callbacks(app: Dash) -> None:
@@ -50,6 +45,7 @@ def register_callbacks(app: Dash) -> None:
         ctx = callback_context
         input_id = ctx.triggered[0]["prop_id"].split(".")[0]
 
+        # Callback triggered by button click - return monte carlo results only
         if input_id == "run-simulation-political-power":
             results_df = func.primary_election_power_monte_carlo(
                 int(n_trials),
@@ -63,23 +59,18 @@ def register_callbacks(app: Dash) -> None:
                 results_df.to_dict("records"),
                 0,
             )
+
+        # Callback triggered by selecting trial # in dropdown -- do nothing
         elif input_id == "trial-count-political-power":
             return no_update, no_update, no_update, no_update, no_update, no_update
+
+        # Callback triggered by initial load -- populate everything
         else:
-            banzhaf_index = func.banzhaf(electoral_votes, 270)
-            general_election_power = {}
-            for i in range(len(banzhaf_index)):
-                general_election_power[electoral_state_order[i]] = {
-                    "Electoral Votes": electoral_votes[i],
-                    "Power": banzhaf_index[i],
-                }
+            # Calculate Banzhaf PI for general election and create visualization
+            power_df = func.banzhaf(electoral_votes, 270)
+            ge_power_bar = func.political_power_bar(power_df)
 
-            ge_power_df = pd.DataFrame.from_dict(general_election_power, orient="index")
-            ge_power_df.reset_index(inplace=True)
-            ge_power_df.rename(columns={"index": "State", 0: "Power"}, inplace=True)
-            ge_power_df.sort_values(by="Power", ascending=False, inplace=True)
-            ge_power_bar = func.political_power_bar(ge_power_df)
-
+            # Run Primary election monte carlo and create visualization
             results_df = func.primary_election_power_monte_carlo(
                 int(n_trials),
             )
@@ -87,7 +78,7 @@ def register_callbacks(app: Dash) -> None:
 
             return (
                 ge_power_bar,
-                ge_power_df.to_dict("records"),
+                power_df.to_dict("records"),
                 0,
                 power_bar,
                 results_df.to_dict("records"),

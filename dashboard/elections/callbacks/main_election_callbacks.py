@@ -1,11 +1,9 @@
+import datetime
+from typing import Any, Dict, List, Tuple
+
 from dash import Input, Output, Dash
 
-import datetime
-
 from dashboard.elections import query
-
-
-from typing import Any, Dict, List, Tuple
 
 
 def register_callbacks(app: Dash) -> None:
@@ -42,11 +40,10 @@ def register_callbacks(app: Dash) -> None:
             date-range | max_date_allowed - datetime: Today's date
 
         """
-        (
-            national_avg_poll_df,
-            national_favorability_df,
-            state_polls_df,
-        ) = query.query_data()
+
+        national_avg_poll_df = query.get_national_avg_polling_data()
+        national_favorability_df = query.get_national_favorability_polling_data()
+        state_polls_df = query.get_state_polling_data()
 
         date = datetime.date.today() - datetime.timedelta(days=30)
         max_date_allowed = datetime.date.today()

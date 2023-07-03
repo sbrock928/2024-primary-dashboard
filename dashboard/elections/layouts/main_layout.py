@@ -1,11 +1,9 @@
+import dash_bootstrap_components as dbc
 from dash import dcc, html
 
-import dash_bootstrap_components as dbc
-
-from dashboard.elections.layouts.polling_tab_layout import polling_tab
-from dashboard.elections.layouts.political_power_layout import political_power_tab
 from dashboard.elections.layouts.election_sim_layout import election_sim_tab
-
+from dashboard.elections.layouts.political_power_layout import political_power_tab
+from dashboard.elections.layouts.polling_tab_layout import polling_tab
 
 election_dashboard_layout = dcc.Loading(
     html.Div(
