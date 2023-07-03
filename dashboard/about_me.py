@@ -1,7 +1,6 @@
 from dash import html
 import dash_bootstrap_components as dbc
 
-
 about_me_layout = html.Div(
     [
         html.H2(
@@ -25,7 +24,7 @@ about_me_layout = html.Div(
         ),
         html.Iframe(
             id="embedded-pdf",
-            src="assets/stephen_brock_resume.pdf",
+            src="../assets/stephen_brock_resume.pdf",
             width="75%",
             height="750vh",
         ),

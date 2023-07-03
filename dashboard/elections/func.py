@@ -3,9 +3,9 @@ import pandas as pd
 import plotly.graph_objects as go
 from copy import copy
 from random import randint
-from dashboard.constants import color_mapping_dict, states, state_order_list
-from datetime import datetime, date
-from typing import Any, Tuple
+from dashboard.elections.constants import color_mapping_dict, states, state_order_list
+from datetime import date
+from typing import Any, Tuple, List
 
 
 def state_standing_map(state_poll_df: pd.DataFrame) -> px.bar:
@@ -474,7 +474,7 @@ def states_ranking_df(state_poll_df: pd.DataFrame) -> pd.DataFrame:
     return new_df
 
 
-def power_bar(results_df: pd.DataFrame) -> px.bar:
+def political_power_bar(results_df: pd.DataFrame) -> px.bar:
     """
     This function creates a bar chart of each state's political power
 
@@ -486,18 +486,144 @@ def power_bar(results_df: pd.DataFrame) -> px.bar:
     """
 
     df = copy(results_df)
-    fig = px.bar(
-        df,
-        y="Winning Coalition Count",
-        x="State",
-    )
+    df.sort_values(by="Power", ascending=True, inplace=True)
+
+    fig = px.bar(df, x="Power", y="State", orientation="h")
 
     return fig
 
 
-def monte_carlo(n_trials: int, hypo_dict: dict[str, Any]) -> Tuple[pd.DataFrame, float]:
+def ge_political_power_bar(results_df: pd.DataFrame) -> px.bar:
     """
-    This function performs a monte carlo simulation of political power
+    This function creates a bar chart of each state's political power in the general election
+
+    inputs:
+        results_df - dataframe: A dataframe of simulation results
+
+    returns:
+        fig - figure: A bar chart of each state's political power
+    """
+
+    df = copy(results_df)
+    df.sort_values(by="Power", ascending=True, inplace=True)
+
+    fig = px.bar(df, x="Power", y="State", orientation="h")
+
+    return fig
+
+
+def banzhaf(weight: List[Any], quota: int) -> List[Any]:
+    """
+    From https://gist.github.com/HeinrichHartmann/8ec2e2245f2a70441257
+    """
+    max_order = sum(weight)
+
+    polynomial = [1] + max_order * [
+        0
+    ]  # create a list to hold the polynomial coefficients
+
+    current_order = 0  # compute the polynomial coefficients
+    aux_polynomial = polynomial[:]
+    for i in range(len(weight)):
+        current_order = current_order + weight[i]
+        offset_polynomial = weight[i] * [0] + polynomial
+        for j in range(current_order + 1):
+            aux_polynomial[j] = polynomial[j] + offset_polynomial[j]
+        polynomial = aux_polynomial[:]
+
+    banzhaf_power = len(weight) * [
+        0
+    ]  # create a list to hold the Banzhaf Power for each voter
+    swings = quota * [0]  # create a list to compute the swings for each voter
+
+    for i in range(len(weight)):  # compute the Banzhaf Power
+        for j in range(quota):  # fill the swings list
+            if j < weight[i]:
+                swings[j] = polynomial[j]
+            else:
+                swings[j] = polynomial[j] - swings[j - weight[i]]
+        for k in range(weight[i]):  # fill the Banzhaf Power vector
+            banzhaf_power[i] = banzhaf_power[i] + swings[quota - 1 - k]
+
+    # Normalize Index
+    total_power = float(sum(banzhaf_power))
+    banzhaf_index = map(lambda x: x / total_power, banzhaf_power)
+
+    return list(banzhaf_index)
+
+
+def primary_election_power_monte_carlo(n_trials: int) -> pd.DataFrame:
+    """
+    This function performs a monte carlo simulation of political power of the republican primary election
+
+    inputs:
+        n_trials - int: Numbermn of trials to run in the simulation
+
+    returns:
+        results_df - dataframe: A dataframe of simulation results
+
+    """
+
+    states_ordered_dict = copy(states)
+
+    for state in states_ordered_dict:
+        states_ordered_dict[state]["Winning Coalition Count"] = 0
+
+    red_team_wins = 0
+    blue_team_wins = 0
+
+    # Number of Simulations
+    trial_count = n_trials
+    for trials in range(0, trial_count):
+        red_sum = 0
+        blue_sum = 0
+
+        for state in states_ordered_dict:
+            states_ordered_dict[state]["Win Tally"] = 0
+
+        # Iterate over each state in order by when they vote
+        for state in states_ordered_dict:
+            # 1237 delegates means we have a nominee
+            if red_sum < 1234 and blue_sum < 1234:
+                rand_int = randint(0, 1)
+
+                if rand_int == 0:
+                    red_sum += states_ordered_dict[state]["Delegates"]
+                    states_ordered_dict[state]["Win Tally"] = 1
+                else:
+                    blue_sum += states_ordered_dict[state]["Delegates"]
+            else:
+                break
+
+        if red_sum >= 1234:
+            for state in states_ordered_dict:
+                if states_ordered_dict[state]["Win Tally"] == 1:
+                    states_ordered_dict[state]["Winning Coalition Count"] += 1
+            red_team_wins += 1
+        else:
+            blue_team_wins += 1
+
+    results_df = pd.DataFrame.from_dict(states, orient="index").sort_values(
+        ["Winning Coalition Count"], ascending=False
+    )
+    results_df["Winning Coalition Pct"] = (
+        results_df["Winning Coalition Count"] / trial_count
+    )
+    results_df["Power"] = (
+        results_df["Winning Coalition Count"]
+        / results_df["Winning Coalition Count"].sum()
+    )
+    results_df.reset_index(inplace=True)
+    results_df.rename(columns={"index": "State"}, inplace=True)
+
+    return results_df
+
+
+def election_simulation_monte_carlo(
+    n_trials: int, hypo_dict: dict[str, Any]
+) -> Tuple[pd.DataFrame, float]:
+    """
+    This function performs a monte carlo simulation of the republican primary election
 
     inputs:
         n_trials - int: Numbermn of trials to run in the simulation
@@ -558,7 +684,8 @@ def monte_carlo(n_trials: int, hypo_dict: dict[str, Any]) -> Tuple[pd.DataFrame,
     df = pd.DataFrame.from_dict(states, orient="index").sort_values(
         ["Winning Coalition Count"], ascending=False
     )
-    df["Winning Coalition Pct"] = (df["Winning Coalition Count"] / trial_count) * 100
+    df["Winning Coalition Pct"] = df["Winning Coalition Count"] / trial_count
+    df["Power"] = df["Winning Coalition Count"] / df["Winning Coalition Count"].sum()
     df.reset_index(inplace=True)
     df.rename(columns={"index": "State"}, inplace=True)
 

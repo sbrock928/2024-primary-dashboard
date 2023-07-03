@@ -2,10 +2,17 @@ import dash
 import dash_bootstrap_components as dbc
 
 from dash import html, dcc, Input, Output, State
-from dashboard.layout import rep_primary_layout
-from about_me_layout import about_me_layout
-from sidebar import sidebar
+from dashboard.elections.layouts.main_layout import election_dashboard_layout
+from dashboard.about_me import about_me_layout
+from dashboard.sidebar import sidebar
 from dash_bootstrap_templates import load_figure_template
+from dashboard.elections.callbacks import (
+    main_election_callbacks,
+    election_sim_callbacks,
+    political_power_sim_callbacks,
+    polling_callbacks,
+)
+
 
 from typing import Any
 
@@ -23,6 +30,10 @@ app = dash.Dash(
 server = app.server
 app.config.suppress_callback_exceptions = True
 
+main_election_callbacks.register_callbacks(app)
+polling_callbacks.register_callbacks(app)
+election_sim_callbacks.register_callbacks(app)
+political_power_sim_callbacks.register_callbacks(app)
 
 app.layout = html.Div(
     [
@@ -45,8 +56,8 @@ def render_page_content(pathname: str) -> Any:
 
     if pathname == "/":
         return about_me_layout
-    elif pathname == "/primary":
-        return rep_primary_layout
+    elif pathname == "/election-dashboard":
+        return election_dashboard_layout
 
     # If the user tries to reach a different page, return a 404 message
     return html.Div(

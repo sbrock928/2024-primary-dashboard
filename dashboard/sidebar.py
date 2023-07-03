@@ -1,4 +1,4 @@
-from dash import html, dcc, Input, Output, State
+from dash import html
 import dash_bootstrap_components as dbc
 
 # we use the Row and Col components to construct the sidebar header
@@ -51,7 +51,11 @@ sidebar = html.Div(
             dbc.Nav(
                 [
                     dbc.NavLink("Home", href="/", active="exact"),
-                    dbc.NavLink("Primary Polling", href="/primary", active="exact"),
+                    dbc.NavLink(
+                        "2024 Presidential Election",
+                        href="/election-dashboard",
+                        active="exact",
+                    ),
                 ],
                 vertical=True,
                 pills=True,
