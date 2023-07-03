@@ -84,193 +84,211 @@ banzhaf_power_table = dash_table.DataTable(
 
 political_power_tab = dbc.Tab(
     [
-        dbc.Row(
+        dbc.Accordion(
             [
-                dbc.Col(
+                dbc.AccordionItem(
                     [
-                        dbc.Card(
-                            [
-                                dbc.CardHeader("Instructions"),
-                                dbc.CardBody(
-                                    [
-                                        dbc.Row(
+                        dbc.Row(
+                            dbc.Col(
+                                dbc.Card(
+                                    children=[
+                                        dbc.CardHeader(
+                                            "Calculating the Banzhaf Power Index"
+                                        ),
+                                        dbc.CardBody(
                                             [
-                                                dbc.Col(
-                                                    [
-                                                        dcc.Markdown(
-                                                            """
-                                                            This is a simulation of Trump's winning chances based on different hypothetical scenarios of states won.\
-                                                            Users can select different states to assign to Trump, the Opposition candidate, or random chance between the two.
-
-                                                            1. Select number of trials to be run (Dropdown Below)
-                                                            2. In the 'Scenario' column of the below table, select the dropdown on a state if you wish to guarantee a win
-                                                            3. Click 'Run Simulation'
-                                                        """
-                                                        )
-                                                    ]
+                                                dbc.Row(
+                                                    dbc.Col(
+                                                        [
+                                                            dcc.Markdown(
+                                                                """
+                                                                         1. List all winning coalitions.
+                                                                         2. In each coalition, identify the players who are critical.
+                                                                         3. Count up how many times each player is critical. This number is called the player's Banzhaf score (also called the critical count).
+                                                                         4. Add the Banzhaf scores of all players together, to find the total number of times any player is critical. This number is called the total power score.
+                                                                         5. Convert the Banzhaf score of each player to a fraction or decimal by dividing it by the total power score. This number is the player's Banzhaf power index. It can be expressed as a fraction, decimal, or percent.
+                                                                         
+                                                                         
+                                                                         
+                                                                         For the US General Election, the quota will be 270 electoral votes and the weight will be each state's number of electoral votes 
+                                                                         
+                                                                         https://mathbooks.unl.edu/Contemporary/sec-6-1-banzhaf.html
+                                                                         """
+                                                            )
+                                                        ],
+                                                        sm=12,
+                                                        xxl=8,
+                                                    )
                                                 ),
-                                            ],
-                                            style={
-                                                "padding-top": "10px",
-                                                "padding-bottom": "10px",
-                                            },
-                                        )
-                                    ]
-                                ),
-                            ]
-                        )
-                    ],
-                    sm=12,
-                    xxl=12,
-                )
-            ],
-            style={"padding-top": "10px", "padding-bottom": "10px"},
-        ),
-        dbc.Row(
-            dbc.Col(
-                dbc.Card(
-                    children=[
-                        dbc.CardHeader("General Election Power"),
-                        dbc.CardBody(
-                            [
-                                dbc.Row(
-                                    [
-                                        dbc.Col(
-                                            [
-                                                dbc.Card(
-                                                    dcc.Loading(
-                                                        children=[
-                                                            html.Div(
-                                                                banzhaf_power_table
-                                                            )
-                                                        ],
-                                                        type="circle",
-                                                    ),
-                                                )
-                                            ],
-                                            sm=12,
-                                            xxl=8,
-                                        ),
-                                        dbc.Col(
-                                            [
-                                                dbc.Card(
-                                                    dcc.Loading(
-                                                        children=[
-                                                            dcc.Graph(
-                                                                id="banzhaf-power-bar",
-                                                                config={
-                                                                    "displayModeBar": False
-                                                                },
-                                                            )
-                                                        ],
-                                                        type="circle",
-                                                    ),
-                                                )
-                                            ],
-                                            sm=12,
-                                            xxl=4,
-                                        ),
-                                    ]
-                                ),
-                            ]
-                        ),
-                    ],
-                )
-            )
-        ),
-        dbc.Row(
-            dbc.Col(
-                dbc.Card(
-                    id="results-card-state-power",
-                    children=[
-                        dbc.CardHeader("Results"),
-                        dbc.CardBody(
-                            [
-                                dbc.Row(
-                                    [
-                                        dbc.Col(
-                                            [
-                                                dcc.Dropdown(
-                                                    id="trial-count-political-power",
-                                                    options=[
-                                                        {
-                                                            "label": "10,000",
-                                                            "value": "10000",
-                                                        },
-                                                        {
-                                                            "label": "50,000",
-                                                            "value": "50000",
-                                                        },
-                                                        {
-                                                            "label": "100,000",
-                                                            "value": "100000",
-                                                        },
-                                                    ],
-                                                    placeholder="Select Number of Trials",
-                                                    value=10000,
-                                                    clearable=False,
-                                                )
-                                            ]
-                                        ),
-                                        dbc.Col(
-                                            [
-                                                html.Button(
-                                                    "Run Simulation",
-                                                    id="run-simulation-political-power",
-                                                )
                                             ]
                                         ),
                                     ],
-                                    style={
-                                        "padding-top": "10px",
-                                        "padding-bottom": "10px",
-                                    },
-                                ),
-                                dbc.Row(
-                                    [
-                                        dbc.Col(
-                                            [
-                                                dbc.Card(
-                                                    dcc.Loading(
-                                                        children=[
-                                                            html.Div(
-                                                                simulation_power_table
-                                                            )
-                                                        ],
-                                                        type="circle",
+                                )
+                            )
+                        ),
+                        dbc.Row(
+                            [
+                                dbc.Col(
+                                    dbc.Card(
+                                        children=[
+                                            dbc.CardHeader(
+                                                "US General Election Banzhaf Power Index"
+                                            ),
+                                            dbc.CardBody(
+                                                [
+                                                    dbc.Row(
+                                                        [
+                                                            dbc.Col(
+                                                                [
+                                                                    dbc.Card(
+                                                                        dcc.Loading(
+                                                                            children=[
+                                                                                html.Div(
+                                                                                    banzhaf_power_table
+                                                                                )
+                                                                            ],
+                                                                            type="circle",
+                                                                        ),
+                                                                    )
+                                                                ],
+                                                                sm=12,
+                                                                xxl=8,
+                                                            ),
+                                                            dbc.Col(
+                                                                [
+                                                                    dbc.Card(
+                                                                        dcc.Loading(
+                                                                            children=[
+                                                                                dcc.Graph(
+                                                                                    id="banzhaf-power-bar",
+                                                                                    config={
+                                                                                        "displayModeBar": False
+                                                                                    },
+                                                                                )
+                                                                            ],
+                                                                            type="circle",
+                                                                        ),
+                                                                    )
+                                                                ],
+                                                                sm=12,
+                                                                xxl=4,
+                                                            ),
+                                                        ]
                                                     ),
-                                                )
-                                            ],
-                                            sm=12,
-                                            xxl=8,
-                                        ),
-                                        dbc.Col(
-                                            [
-                                                dbc.Card(
-                                                    dcc.Loading(
-                                                        children=[
-                                                            dcc.Graph(
-                                                                id="simulation-power-bar",
-                                                                config={
-                                                                    "displayModeBar": False
-                                                                },
-                                                            )
-                                                        ],
-                                                        type="circle",
-                                                    ),
-                                                )
-                                            ],
-                                            sm=12,
-                                            xxl=4,
-                                        ),
-                                    ]
-                                ),
-                            ]
+                                                ]
+                                            ),
+                                        ],
+                                    )
+                                )
+                            ],
+                            style={"padding-top": "10px"},
                         ),
                     ],
-                )
-            )
-        ),
+                    title="General Election - Banzhaf Power Index",
+                    item_id="general-election",
+                ),
+                dbc.AccordionItem(
+                    dbc.Row(
+                        dbc.Col(
+                            dbc.Card(
+                                id="results-card-state-power",
+                                children=[
+                                    dbc.CardHeader("Results"),
+                                    dbc.CardBody(
+                                        [
+                                            dbc.Row(
+                                                [
+                                                    dbc.Col(
+                                                        [
+                                                            dcc.Dropdown(
+                                                                id="trial-count-political-power",
+                                                                options=[
+                                                                    {
+                                                                        "label": "10,000",
+                                                                        "value": "10000",
+                                                                    },
+                                                                    {
+                                                                        "label": "50,000",
+                                                                        "value": "50000",
+                                                                    },
+                                                                    {
+                                                                        "label": "100,000",
+                                                                        "value": "100000",
+                                                                    },
+                                                                ],
+                                                                placeholder="Select Number of Trials",
+                                                                value=10000,
+                                                                clearable=False,
+                                                            )
+                                                        ]
+                                                    ),
+                                                    dbc.Col(
+                                                        [
+                                                            html.Button(
+                                                                "Run Simulation",
+                                                                id="run-simulation-political-power",
+                                                            )
+                                                        ]
+                                                    ),
+                                                ],
+                                                style={
+                                                    "padding-top": "10px",
+                                                    "padding-bottom": "10px",
+                                                },
+                                            ),
+                                            dbc.Row(
+                                                [
+                                                    dbc.Col(
+                                                        [
+                                                            dbc.Card(
+                                                                dcc.Loading(
+                                                                    children=[
+                                                                        html.Div(
+                                                                            simulation_power_table
+                                                                        )
+                                                                    ],
+                                                                    type="circle",
+                                                                ),
+                                                            )
+                                                        ],
+                                                        sm=12,
+                                                        xxl=8,
+                                                    ),
+                                                    dbc.Col(
+                                                        [
+                                                            dbc.Card(
+                                                                dcc.Loading(
+                                                                    children=[
+                                                                        dcc.Graph(
+                                                                            id="simulation-power-bar",
+                                                                            config={
+                                                                                "displayModeBar": False
+                                                                            },
+                                                                        )
+                                                                    ],
+                                                                    type="circle",
+                                                                ),
+                                                            )
+                                                        ],
+                                                        sm=12,
+                                                        xxl=4,
+                                                    ),
+                                                ]
+                                            ),
+                                        ]
+                                    ),
+                                ],
+                            )
+                        )
+                    ),
+                    title="Republican Primary Election - Monte Carlo",
+                    id="primary-election",
+                ),
+            ],
+            active_item="general-election",
+            style={"padding-top": "10px"},
+            flush=True,
+        )
     ],
     label="Political Power Simulation",
 )
