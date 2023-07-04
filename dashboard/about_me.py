@@ -24,7 +24,7 @@ about_me_layout = html.Div(
         ),
         html.Iframe(
             id="embedded-pdf",
-            src="../assets/stephen_brock_resume.pdf",
+            src="../assets/brock_resume_07_03_2023.pdf",
             width="75%",
             height="750vh",
         ),
