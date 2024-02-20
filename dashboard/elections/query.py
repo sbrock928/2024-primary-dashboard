@@ -26,6 +26,10 @@ def get_national_avg_polling_data() -> pd.DataFrame:
 
     # Remove prior election cycle data and take only columns we need
     national_avg_poll_df = national_avg_poll_df[national_avg_poll_df["cycle"] == 2024]
+    national_avg_poll_df = national_avg_poll_df[
+        national_avg_poll_df["state"] == "National"
+    ]
+    national_avg_poll_df = national_avg_poll_df[national_avg_poll_df["party"] == "REP"]
     national_avg_poll_df = national_avg_poll_df[import_columns]
 
     # Rename columns
@@ -43,19 +47,7 @@ def get_national_avg_polling_data() -> pd.DataFrame:
         candidate_names
     )
     national_avg_poll_df = national_avg_poll_df[
-        national_avg_poll_df["Candidate"].isin(
-            [
-                "Pence",
-                "Haley",
-                "DeSantis",
-                "Scott",
-                "Trump",
-                "Ramaswamy",
-                "Hutchinson",
-                "Burgum",
-                "Christie",
-            ]
-        )
+        national_avg_poll_df["Candidate"].isin(["Haley", "Trump"])
     ]
 
     return national_avg_poll_df
@@ -97,19 +89,7 @@ def get_national_favorability_polling_data() -> pd.DataFrame:
         "Candidate"
     ].replace(candidate_names)
     national_favorability_df = national_favorability_df[
-        national_favorability_df["Candidate"].isin(
-            [
-                "Pence",
-                "Haley",
-                "DeSantis",
-                "Scott",
-                "Trump",
-                "Ramaswamy",
-                "Hutchinson",
-                "Burgum",
-                "Christie",
-            ]
-        )
+        national_favorability_df["Candidate"].isin(["Haley", "Trump"])
     ]
 
     return national_favorability_df
@@ -150,19 +130,7 @@ def get_state_polling_data() -> pd.DataFrame:
     # Replace candidate names and select only top republican candidates
     state_polls_df["Candidate"] = state_polls_df["Candidate"].replace(candidate_names)
     state_polls_df = state_polls_df[
-        state_polls_df["Candidate"].isin(
-            [
-                "Pence",
-                "Haley",
-                "DeSantis",
-                "Scott",
-                "Trump",
-                "Ramaswamy",
-                "Hutchinson",
-                "Burgum",
-                "Christie",
-            ]
-        )
+        state_polls_df["Candidate"].isin(["Haley", "Trump"])
     ]
 
     return state_polls_df

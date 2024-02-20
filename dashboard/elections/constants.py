@@ -296,18 +296,7 @@ state_code_mapping = {
     "Wyoming": "WY",
 }
 
-candidate_names = {
-    "Mike Pence": "Pence",
-    "Nikki Haley": "Haley",
-    "Ron DeSantis": "DeSantis",
-    "Tim Scott": "Scott",
-    "T. Scott": "Scott",
-    "Donald Trump": "Trump",
-    "Asa Hutchinson": "Hutchinson",
-    "Vivek G. Ramaswamy": "Ramaswamy",
-    "Doug Burgum": "Burgum",
-    "Chris Christie": "Christie",
-}
+candidate_names = {"Nikki Haley": "Haley", "Donald Trump": "Trump"}
 import_columns = [
     "candidate",
     "date",

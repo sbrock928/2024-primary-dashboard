@@ -13,38 +13,7 @@ candidate_dropdown = dcc.Dropdown(
     id="candidate-select",
     options=[
         {"label": "Trump", "value": "Trump"},
-        {
-            "label": "DeSantis",
-            "value": "DeSantis",
-        },
-        {
-            "label": "Pence",
-            "value": "Pence",
-        },
-        {
-            "label": "Haley",
-            "value": "Haley",
-        },
-        {
-            "label": "Scott",
-            "value": "Scott",
-        },
-        {
-            "label": "Ramaswamy",
-            "value": "Ramaswamy",
-        },
-        {
-            "label": "Hutchinson",
-            "value": "Hutchinson",
-        },
-        {
-            "label": "Burgum",
-            "value": "Burgum",
-        },
-        {
-            "label": "Christie",
-            "value": "Christie",
-        },
+        {"label": "Haley", "value": "Haley"},
     ],
     value="Trump",
     clearable=False,
